@@ -1,0 +1,10 @@
+﻿@page "/levels/{levelNumber:int}/{*levelType}"
+
+<h3>Level @levelNumber @levelType</h3>
+
+@code {
+    [Parameter]
+    public int levelNumber { get; set; }
+    [ParameterAttribute]
+    public string levelType { get; set; }
+}

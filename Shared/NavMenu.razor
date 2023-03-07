@@ -1,0 +1,192 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">English Challenges</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="() => ToggleNavMenu()">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass">
+    <ul class="nav flex-column">
+        @{
+            <li class="nav-item">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span> Home
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" @onclick="() => ToggleSubmenu(NavSubmenu.levels)">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Levels
+                </NavLink>
+            </li>
+            ShowLevelSubmenu(NavSubmenu.levels);
+
+            <li class="nav-item">
+                <NavLink class="nav-link" @onclick="() => ToggleSubmenu(NavSubmenu.editor)">
+                    <span class="oi oi-pencil" aria-hidden="true"></span> Level Editor
+                </NavLink>
+            </li>
+            ShowLevelSubmenu(NavSubmenu.editor);
+
+            <li class="nav-item">
+                <NavLink class="nav-link" href="/settings">
+                    <span class="oi oi-cog" aria-hidden="true"></span> Settings
+                </NavLink>
+            </li>
+
+            void ShowLevelSubmenu(NavSubmenu submenu)
+            {
+                if (OpenedSubmenus.Contains(submenu))
+                {
+                    for (int i = 1; i <= totalLevels; i++)
+                    {
+                        int levelNum = i;
+
+                        OpenedLevel openedLevel = new(submenu, levelNum);
+
+                        <li class="nav-item px-2">
+                            <NavLink class="nav-link" @onclick="() => ToggleLevels(openedLevel)">
+                                <span class="oi oi-list" aria-hidden="true"></span> Level @(levelNum)
+                            </NavLink>
+                        </li>
+
+                        ShowTypeSubmenu(openedLevel);
+                    }
+                }
+            }
+
+            void ShowTypeSubmenu(OpenedLevel level)
+            {
+                if (OpenedLevels.Contains(level))
+                {
+
+                    <li class="nav-item px-4">
+                        <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.multiplechoice)">
+                            <span class="oi oi-task" aria-hidden="true"></span> Multiple Choice
+                        </NavLink>
+                    </li>
+
+                    <li class="nav-item px-4">
+                        <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.yesno)">
+                            <span class="oi oi-task" aria-hidden="true"></span> Yes/No
+                        </NavLink>
+                    </li>
+
+                    <li class="nav-item px-4">
+                        <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.plural)">
+                            <span class="oi oi-task" aria-hidden="true"></span> Plurality
+                        </NavLink>
+                    </li>
+
+                    if (level.navLevel == 2)
+                    {
+                        <li class="nav-item px-4">
+                            <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.where)">
+                                <span class="oi oi-task" aria-hidden="true"></span> Where?
+                            </NavLink>
+                        </li>
+                    }
+                }
+            }
+        }
+
+    </ul>
+</div>
+
+
+@code {
+    public enum NavSubmenu
+    {
+        home,
+        levels,
+        editor,
+        settings
+    }
+
+
+    public enum NavType
+    {
+        multiplechoice,
+        yesno,
+        plural,
+        where
+    }
+
+    public class OpenedLevel
+    {
+        public NavSubmenu navSubmenu { get; set; }
+        public int navLevel { get; set; }
+
+        public OpenedLevel(NavSubmenu submenu, int level)
+        {
+            this.navSubmenu = submenu;
+            this.navLevel = level;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            OpenedLevel other = (OpenedLevel)obj;
+            return this.navSubmenu == other.navSubmenu && this.navLevel == other.navLevel;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(navSubmenu, navLevel);
+        }
+    }
+
+
+    private HashSet<NavSubmenu> OpenedSubmenus = new();
+    private HashSet<OpenedLevel> OpenedLevels = new();
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private bool collapseNavMenu = true;
+    private int totalLevels { get; set; } = 4;
+
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void ToggleSubmenu(NavSubmenu submenu)
+    {
+        if (OpenedSubmenus.Contains(submenu))
+        {
+            OpenedSubmenus.Remove(submenu);
+        }
+        else
+        {
+            OpenedSubmenus.Add(submenu);
+        }
+    }
+
+    private void ToggleLevels(OpenedLevel level)
+    {
+
+        if (OpenedLevels.Contains(level))
+        {
+            OpenedLevels.Remove(level);
+        }
+        else
+        {
+            OpenedLevels.Add(level);
+        }
+    }
+
+    @inject NavigationManager NavMan
+
+    private void ChooseType(OpenedLevel level, NavType type)
+    {
+        string place = level.navSubmenu.ToString();
+        string levelNum = level.navLevel.ToString();
+        string levelType = type.ToString();
+
+        NavMan.NavigateTo($"/{place}/{levelNum}/{levelType}");
+    }
+}

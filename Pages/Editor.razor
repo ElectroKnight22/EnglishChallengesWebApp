@@ -1,0 +1,10 @@
+﻿@page "/editor/{levelNumber:int}/{*levelType}"
+
+<h3>Editor for @levelNumber @levelType</h3>
+
+@code {
+    [Parameter]
+    public int levelNumber { get; set; }
+    [ParameterAttribute]
+    public string levelType { get; set; }
+}
