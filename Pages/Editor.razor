@@ -1,5 +1,7 @@
 ﻿@page "/editor/{levelNumber:int}/{*levelType}"
 
+@attribute [Authorize]
+
 <h3>Editor for @levelNumber @levelType</h3>
 
 @code {
