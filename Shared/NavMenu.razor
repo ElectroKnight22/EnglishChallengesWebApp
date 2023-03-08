@@ -1,4 +1,11 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inject NavigationManager Navigation
+@inject SignOutSessionStateManager SignOutManager
+
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">English Challenges</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="() => ToggleNavMenu()">
@@ -39,6 +46,24 @@
                     <span class="oi oi-cog" aria-hidden="true"></span> Settings
                 </NavLink>
             </li>
+            <li class="nav-item">
+                <AuthorizeView>
+                    <Authorized>
+                        <NavLink class="nav-link" href="#">
+                            Hello, @context.User.Identity.Name!
+                            <span class="oi oi-account-logout" aria-hidden="true" @onclick="BeginSignOut">
+                            </span> Sign out
+                        </NavLink>
+                    </Authorized>
+                    <NotAuthorized>
+                        <NavLink class="nav-link" href="authentication/login">
+                            <span class="oi oi-account-login" aria-hidden="true"></span>
+                            Sign in
+                        </NavLink>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </li>
+
 
             void ShowLevelSubmenu(NavSubmenu submenu)
             {
@@ -153,6 +178,11 @@
     private bool collapseNavMenu = true;
     private int totalLevels { get; set; } = 4;
 
+    private async Task BeginSignOut(MouseEventArgs args)
+    {
+        await SignOutManager.SetSignOutState();
+        Navigation.NavigateTo("authentication/logout");
+    }
 
     private void ToggleNavMenu()
     {
