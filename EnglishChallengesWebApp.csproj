@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Shared\LoginDisplay.razor" />
     <None Include="Shared\MainLayout.razor" />
     <None Include="Shared\NavMenu.razor" />
     <None Include="Shared\RedirectToLogin.razor" />
