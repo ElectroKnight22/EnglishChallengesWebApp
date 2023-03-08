@@ -23,7 +23,7 @@
                 </NavLink>
             </li>
             <li class="nav-item">
-                <NavLink class="nav-link" href="/user" Match="NavLinkMatch.All">
+                <NavLink class="nav-link" href="user" Match="NavLinkMatch.All">
                     <span class="oi oi-person" aria-hidden="true"></span> Profile
                 </NavLink>
             </li>
@@ -42,7 +42,7 @@
             ShowLevelSubmenu(NavSubmenu.editor);
 
             <li class="nav-item">
-                <NavLink class="nav-link" href="/settings">
+                <NavLink class="nav-link" href="settings">
                     <span class="oi oi-cog" aria-hidden="true"></span> Settings
                 </NavLink>
             </li>
@@ -222,6 +222,6 @@
         string levelNum = level.navLevel.ToString();
         string levelType = type.ToString();
 
-        NavMan.NavigateTo($"/{place}/{levelNum}/{levelType}");
+        NavMan.NavigateTo($"{place}/{levelNum}/{levelType}");
     }
 }
