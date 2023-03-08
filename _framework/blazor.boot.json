@@ -10,7 +10,7 @@
   "linkerEnabled": true,
   "resources": {
     "assembly": {
-      "EnglishChallengesWebApp.dll": "sha256-tVereHJPVsRzKWYBdom0wRnNHJ0oZcHkXyaAw7Enr3U=",
+      "EnglishChallengesWebApp.dll": "sha256-\/JNqfNwvdwTqv785dojANRcJ6HN9hLiGq0adFakihNM=",
       "Microsoft.AspNetCore.Authorization.dll": "sha256-FGvjgkhw0ClyF\/Xg1LV3mLgyY1u+CPbjB1VLLJUw4h4=",
       "Microsoft.AspNetCore.Components.Authorization.dll": "sha256-\/4W9n7HrhUwFWiMb8I0S4nyPEhPgmF+Cp4e5zjVwL\/I=",
       "Microsoft.AspNetCore.Components.dll": "sha256-vHhmelPFwn5YG4NwdIUTqHy28XUqmW4gi3GaSw0Tex4=",
