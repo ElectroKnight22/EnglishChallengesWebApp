@@ -1,10 +1,31 @@
-﻿@page "/levels/{levelNumber:int}/{*levelType}"
+﻿@using EnglishChallengesWebApp.Pages.LevelDisplays
+
+@page "/levels/{levelNumber:int}/{*levelType}"
 
 <h3>Level @levelNumber @levelType</h3>
+
+<div>
+    @{
+        switch (levelType)
+        {
+            case "multiplechoice":
+            <LevelDisplayMC/>
+                break;
+            case "yesno":
+                break;
+            case "plural":
+                break;
+            case "where":
+                break;
+            default:
+                break;
+        }
+    }
+</div>
 
 @code {
     [Parameter]
     public int levelNumber { get; set; }
     [ParameterAttribute]
     public string levelType { get; set; }
-}
+    }

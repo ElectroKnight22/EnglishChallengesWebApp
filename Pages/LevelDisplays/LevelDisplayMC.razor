@@ -1,0 +1,119 @@
+﻿@inherits LevelDisplay
+
+<div>
+    <label style="font-size:16px;text-align:center;">@LevelTitle</label>
+</div>
+<div style="display: flex; justify-content: center; padding: 25px;">
+    <div id="QuestionImageLayout" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;"></div>
+</div>
+<label style="font-size:16px;text-align:center;">Please select the best choice.</label>
+<div style="display: flex; justify-content: center;">
+    <button id="AnswerBtn1" onclick="ChooseAnswer()" style="margin-right:25px;"></button>
+    <button id="AnswerBtn2" onclick="ChooseAnswer()" style="margin-right:25px;"></button>
+    <button id="AnswerBtn3" onclick="ChooseAnswer()"></button>
+</div>
+<div style="display: flex; justify-content: center;">
+    <button id="HIntBtn" onclick="ClickedHint()" style="margin-top:25px;">HINT</button>
+</div>
+<div style="display: flex; justify-content: center;">
+    <button id="ResetBtn" onclick="ResetLevel()" style="margin-top:50px;">Reset Level</button>
+</div>
+
+
+@code{
+    string LevelTitle = "Level 0 type 0";
+
+    protected override void OnInitialized()
+    {
+        UpdateLevelTitle();
+    }
+
+    public void UpdateLevelTitle()
+    {
+        try { LevelTitle = "new label text"; }
+        catch { throw new Exception("levelname label has not been created."); }
+    }
+}
+
+
+@*
+@code {
+
+    protected override void OnInitialized()
+    {
+        UpdateLevelTitle(true);
+    }
+
+
+    public LevelDisplayMC(int LevelNumber, string LevelType) : base(LevelNumber, LevelType)
+    {
+        Update(true);
+    }
+
+    public override void UpdateLevelTitle()
+    {
+        try { LevelTitle = "new label text"; }
+        catch { throw new Exception("levelname label has not been created."); }
+    }
+
+    //public override void UpdateQuestionImage()
+    //{
+    //    QuestionImageLayout.Clear();
+    //    QuestionImageLayout.Add(QuestionImage.Image);
+    //    //ImageAttribution.FormattedText = base.ImageAttribution;
+    //}
+
+    //public override void UpdateShownQuestion()
+    //{
+    //    Random rnd = new Random();
+    //    List<int> answerIndexes = new List<int> { 0, 1, 2 };
+    //    var shuffledIndex = answerIndexes.OrderBy(a => rnd.Next()).ToList();
+
+    //    AnswerBtn1.Id = shuffledIndex[0].ToString();
+    //    AnswerBtn2.ClassId = shuffledIndex[1].ToString();
+    //    AnswerBtn3.ClassId = shuffledIndex[2].ToString();
+
+    //    LoadOptionText(AnswerBtn1);
+    //    LoadOptionText(AnswerBtn2);
+    //    LoadOptionText(AnswerBtn3);
+
+    //}
+
+    //public override async void ChooseAnswer(object sender, EventArgs e)
+    //{
+    //    Button button = sender as Button;
+    //    await Task.Yield();
+    //    button.IsEnabled = false;
+    //    bool isCorrect = await CheckAnswer(button);
+    //    if (isCorrect) { await SpeakAnswer(); }
+    //    bool shouldUpdate = isCorrect;
+    //    await Update(shouldUpdate);
+    //    await Task.Delay(200);
+    //    button.IsEnabled = true;
+    //}
+
+    //public override async Task<bool> CheckAnswer(Button button)
+    //{
+    //    bool isCorrect = button.ClassId == "0";
+    //    await UpdateScore(isCorrect);
+    //    return isCorrect;
+    //}
+
+    //public override void LoadOptionText(Button button)
+    //{
+    //    int Id = int.Parse(button.ClassId);
+    //    switch (Id)
+    //    {
+    //        case 0:
+    //            button.Text = CurrentQuestion.CorrectAnswer.ToLower();
+    //            break;
+    //        case 1:
+    //            button.Text = CurrentQuestion.WrongAnswer1.ToLower();
+    //            break;
+    //        case 2:
+    //            button.Text = CurrentQuestion.WrongAnswer2.ToLower();
+    //            break;
+    //    }
+    //}
+}
+*@
