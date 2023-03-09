@@ -10,7 +10,7 @@
   "linkerEnabled": true,
   "resources": {
     "assembly": {
-      "EnglishChallengesWebApp.dll": "sha256-TwvW5isWgdPyoSk0IuzAbWh0sbkdgziyStphsjbm30k=",
+      "EnglishChallengesWebApp.dll": "sha256-E1GyA0iDGWd\/Sf0L8HGj9whSOguKLm53rFEZBDfHWqc=",
       "Microsoft.AspNetCore.Authorization.dll": "sha256-FGvjgkhw0ClyF\/Xg1LV3mLgyY1u+CPbjB1VLLJUw4h4=",
       "Microsoft.AspNetCore.Components.Authorization.dll": "sha256-\/4W9n7HrhUwFWiMb8I0S4nyPEhPgmF+Cp4e5zjVwL\/I=",
       "Microsoft.AspNetCore.Components.dll": "sha256-vHhmelPFwn5YG4NwdIUTqHy28XUqmW4gi3GaSw0Tex4=",
@@ -31,7 +31,7 @@
       "Microsoft.JSInterop.dll": "sha256-L85W0kGe1vzXNUYnqQARFyJyU5KutJYw6dMeZkGsS6Q=",
       "Microsoft.JSInterop.WebAssembly.dll": "sha256-hUxOrW0i2d4N\/3At6wRqsDMpya9fFCtdE6YcQJb8d40=",
       "System.Collections.Concurrent.dll": "sha256-msNQGvEQMB3UBep4DdwUJ4aZq\/8F81aJPw+A7mRc1jQ=",
-      "System.Collections.dll": "sha256-Ib\/TB12qZJa0kFsC7QVQVYgkzeG1FG0iPcT2ziuQ2N0=",
+      "System.Collections.dll": "sha256-mLQ7qtRYIxZHbviIAlG6mwuKxl7oE4wtOWLAP5GUj90=",
       "System.Collections.NonGeneric.dll": "sha256-Q+6TojxULSxDyP+Mq9R4fjQH\/7gvsUJ\/gmjMO23hDmI=",
       "System.Collections.Specialized.dll": "sha256-FSsM43XwxbOUgYCwNcbrn\/Vb5c3CVu2vpHhXYznijd0=",
       "System.ComponentModel.dll": "sha256-i8l1LCCL8JFSIBljON1cA2eYNziHWE21TXOhsLVQa+Y=",
@@ -46,7 +46,7 @@
       "System.ObjectModel.dll": "sha256-D\/uv157htR5lX1+qg5zgX+\/b\/XdbUdgCz+6JAgGedIk=",
       "System.Private.CoreLib.dll": "sha256-BEHubwuGpipvXIqJFDLZOl9AIc5Iyn9XgItTOsf\/\/W4=",
       "System.Private.Uri.dll": "sha256-KhmVJoywmG3kKcRGX9DkYhLv9zRZNbqsgEotWYSK5BI=",
-      "System.Runtime.dll": "sha256-7Ov5kwN9IktQsjGD\/ClEfDIZVMptdpC1oMboMPofVh8=",
+      "System.Runtime.dll": "sha256-fDdKU28lKqBhLIFu+aqlNfvoPHxCM4VPHecEu2X8\/zk=",
       "System.Runtime.InteropServices.JavaScript.dll": "sha256-IhmhXzzO60OoH+wLFM5KuYihvi5jEDXvIiOZzV\/5i4o=",
       "System.Security.Claims.dll": "sha256-tkIhuur5Cx64Qfx39hDYO9S0FO0Gy2nRXxIjM3XZM2U=",
       "System.Text.Encodings.Web.dll": "sha256-hnmkcWS1u4akDjNnEVBY3N9HGT+VmFajs8yg5AdB2mo=",
