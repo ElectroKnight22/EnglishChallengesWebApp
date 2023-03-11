@@ -9,20 +9,19 @@
     //FormattedString ImageAttribution { get; set; }
     Question CurrentQuestion { get; set; }
 
-    ILevelDisplay questionPage { get; set; }
+    Task Update(bool shouldUpdate);
 
-    void Update(bool shouldUpdate);
-
-    void ChooseAnswer(object sender, EventArgs e);
+    Task ChooseAnswer(int buttonNumber);
 
     void InitializeQuestionSet();
+    void InitializeAnswers();
 
     void LoadQuestion();
-    Task UpdateScore(bool isCorrect);
-    Task<bool> CheckAnswer();
-    void ClickedHint(object sender, EventArgs e);
-    void ResetLevel(object sender, EventArgs e);
-    void UpdateLevelTitle();
+    void UpdateScore(bool isCorrect);
+    bool CheckAnswer(int buttonNumber);
+    void GiveHint();
+    Task ResetLevel();
+    void SetLevelTitle();
     void UpdateShownQuestion();
     void UpdateQuestionImage();
     Task SpeakAnswer();

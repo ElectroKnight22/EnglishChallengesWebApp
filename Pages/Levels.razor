@@ -1,17 +1,27 @@
 ﻿@using EnglishChallengesWebApp.Pages.LevelDisplays
 
+@inject SpeechSynthesis speaker
+@inject SweetAlertService swal
+
 @page "/levels/{levelNumber:int}/{*levelType}"
 
 <h3>Level @levelNumber @levelType</h3>
 
 <div>
     @{
+        var parameters = new { LevelNumber = levelNumber, LevelType = levelType, Speaker = speaker, Swal = swal};
+        var attributes = parameters.GetType().GetProperties()
+        .Select(p => new KeyValuePair<string, object>(p.Name, p.GetValue(parameters, null)))
+        .ToArray();
+
+
         switch (levelType)
         {
             case "multiplechoice":
-            <LevelDisplayMC/>
+                <LevelDisplayMC @attributes=attributes />
                 break;
             case "yesno":
+
                 break;
             case "plural":
                 break;
@@ -28,4 +38,4 @@
     public int levelNumber { get; set; }
     [ParameterAttribute]
     public string levelType { get; set; }
-    }
+}

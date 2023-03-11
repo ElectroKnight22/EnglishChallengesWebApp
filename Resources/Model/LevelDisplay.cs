@@ -1,63 +1,225 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Toolbelt.Blazor.SpeechSynthesis;
+using CurrieTechnologies.Razor.SweetAlert2;
 
-public abstract class LevelDisplay : ComponentBase /*ILevelDisplay*/
+
+public abstract class LevelDisplay : ComponentBase, ILevelDisplay
 {
+    [Parameter]
     public int LevelNumber { get; set; }
+    [Parameter]
     public string LevelType { get; set; }
+    [Parameter]
     public string LevelTitle { get; set; }
+    [Parameter]
     public int questionNumber { get; set; }
     public int score { get; set; }
     public int attempts { get; set; }
+
+    public List<Question> CurrentQuestionSet { get; set; }
+    public Question? CurrentQuestion { get; set; }
+    //[Parameter]
+    //public QuestionImage QuestionImage { get; set; }
+    //[Parameter]
+    //public FormattedString ImageAttribution { get; set; }
+    [Parameter]
+    public SpeechSynthesis Speaker { get; set; }
+
+    [Parameter]
+    public SweetAlertService Swal { get; set; }
+
+    public bool AnswerButtonDisabled { get; set; } = false;
+
+    public List<string> AnswerTexts = new();
+
+    protected override void OnInitialized()
+    {
+        InitializeQuestionSet();
+        InitializeAnswers();
+        Update(true);
+
+    }
+
+    public virtual async Task ChooseAnswer(int buttonNumber)
+    {
+        if (CurrentQuestion != null)
+        {
+            await Task.Yield();
+            AnswerButtonDisabled = true;
+            bool isCorrect = CheckAnswer(buttonNumber);
+            bool shouldUpdate = isCorrect;
+            await Update(shouldUpdate);
+            await Task.Delay(200);
+            AnswerButtonDisabled = false;
+        }
+    }
+    public virtual bool CheckAnswer(int buttonNumber)
+    {
+        bool isCorrect = AnswerTexts[buttonNumber] == CurrentQuestion.CorrectAnswer;
+        UpdateScore(isCorrect);
+        return isCorrect;
+    }
+
+    public async void GiveHint()
+    {
+        await SpeakAnswer();
+    }
+
+    public void InitializeQuestionSet()
+    {
+        CurrentQuestionSet = new();
+        HashSet<Question> currentLevelHash = new();
+        foreach (Question question in CurrentQuestionSet)
+        {
+            currentLevelHash.Add(question);
+        }
+        CurrentQuestionSet = currentLevelHash.OrderBy(x => Guid.NewGuid()).ToList();
+    }
+
+    public void InitializeAnswers()
+    {
+        AnswerTexts.Add("Correct");
+        AnswerTexts.Add("Wrong1");
+        AnswerTexts.Add("Wrong2");
+    }
+
+    public void LoadQuestion()
+    {
+        Random rnd = new Random();
+        List<int> answerIndexes = new List<int> { 0, 1, 2 };
+        var shuffledIndex = answerIndexes.OrderBy(a => rnd.Next()).ToList();
+
+        CurrentQuestion = CurrentQuestionSet.First();
+        CurrentQuestionSet.Remove(CurrentQuestion);
+        SetLevelTitle();
+    }
+
+    public async Task ResetLevel()
+    {
+        questionNumber = 0;
+        score = 0;
+        attempts = 0;
+        InitializeQuestionSet();
+        await Update(true);
+    }
+
+    public async Task SpeakAnswer()
+    {
+        await Speaker.CancelAsync();
+        if (CurrentQuestion != null)
+        {
+            await Speaker.SpeakAsync(CurrentQuestion.CorrectAnswer);
+        }
+    }
+
+    public async Task Update(bool shouldUpdate)
+    {
+        SetLevelTitle();
+        if (shouldUpdate)
+        {
+            if (CurrentQuestionSet.Count == 0)
+            {
+                await PromptReplay();
+            }
+            else
+            {
+                LoadQuestion();
+                //await QuestionImage.Initialize(CurrentQuestion.CorrectAnswer);
+                //GetFormattedImageAttribution();
+                UpdateShownQuestion();
+                //UpdateQuestionImage();
+            }
+        }
+        SetLevelTitle();
+    }
+
+    public void SetLevelTitle()
+    {
+        try
+        {
+            LevelTitle = $"Level {LevelNumber.ToString()} Question {questionNumber.ToString()} - {CurrentQuestionSet.Count} left. Attempts: {attempts}. Score: {score}.";
+        }
+        catch { throw new Exception("LevelTitle label has not been created."); }
+    }
+
+    void ILevelDisplay.UpdateQuestionImage()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void UpdateScore(bool isCorrect)
+    {
+        if (isCorrect)
+        {
+            score++;
+            questionNumber++;
+        }
+        attempts++;
+        LevelTitle = $"Level {LevelNumber.ToString()} Question {questionNumber.ToString()} - {CurrentQuestionSet.Count} left. Attempts: {attempts}. Score: {score}.";
+    }
+
+    public void UpdateShownQuestion()
+    {
+        Random rnd = new Random();
+        List<int> answerIndexes = new List<int> { 0, 1, 2 };
+        var shuffledIndex = answerIndexes.OrderBy(a => rnd.Next()).ToList();
+
+        foreach (int i in shuffledIndex)
+        {
+            switch (i)
+            {
+                case 0:
+                    AnswerTexts.Add(CurrentQuestion.CorrectAnswer);
+                    break;
+                case 1:
+                    AnswerTexts.Add(CurrentQuestion.WrongAnswer1);
+                    break;
+                case 2:
+                    AnswerTexts.Add(CurrentQuestion.WrongAnswer2);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    public async Task PromptReplay()
+    {
+        SweetAlertResult replayLevel = await Swal.FireAsync(new SweetAlertOptions
+        {
+            Title = "No more questions!",
+            Text = "Resetting the level.",
+            Icon = SweetAlertIcon.Warning,
+            ShowCancelButton = true,
+            ConfirmButtonText = "OK",
+            CancelButtonText = "Cancel",
+        });
+
+        if (!string.IsNullOrEmpty(replayLevel.Value))
+        {
+            await Swal.FireAsync(
+              "Level Reset",
+              "Another attempt at the questions!",
+              SweetAlertIcon.Success
+              );
+            await ResetLevel();
+        }
+        else if (replayLevel.Dismiss == DismissReason.Cancel)
+        {
+            await Swal.FireAsync(
+              "Cancelled",
+              "You chose to not start over.",
+              SweetAlertIcon.Error
+              );
+        }
+        //else await Application.Current.MainPage.Navigation.PopAsync();
+
+        //todo
+    }
 }
-//    public List<Question> CurrentQuestionSet { get; set; }
-//    public Question CurrentQuestion { get; set; }
-//    //public QuestionImage QuestionImage { get; set; }
 
-//    //public FormattedString ImageAttribution { get; set; }
-//    public ILevelDisplay questionPage { get; set; }
-//    List<Question> ILevelDisplay.CurrentQuestionSet { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-//    Question ILevelDisplay.CurrentQuestion { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-//    ILevelDisplay ILevelDisplay.questionPage { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-//    public LevelDisplay(int LevelNumber, string LevelType)
-//    {
-//        this.LevelNumber = LevelNumber;
-//        this.LevelType = LevelType;
-//        InitializeQuestionSet();
-//        //QuestionImage = new();
-//    }
 
-//    public void Update(bool shouldUpdate)
-//    {
-//        UpdateLevelTitle();
-//        if (shouldUpdate)
-//        {
-//            if (CurrentQuestionSet.Count == 0)
-//            {
-//                //await PromptReplay();
-//            }
-//            else
-//            {
-//                LoadQuestion();
-//                //await QuestionImage.Initialize(CurrentQuestion.CorrectAnswer);
-//                //GetFormattedImageAttribution();
-
-//                //todo
-//                UpdateShownQuestion();
-//                UpdateQuestionImage();
-//            }
-//        }
-//        UpdateLevelTitle();
-//    }
-
-//    private async Task PromptReplay()
-//    {
-//        //var replayLevel = await JSRuntime.InvokeVoidAsync("alert", "Hello, world!");
-//        //if (replayLevel) ResetLevel(this, null);
-//        //else await Application.Current.MainPage.Navigation.PopAsync();
-
-//        //todo
-//    }
 
 //    public virtual async void ChooseAnswer(object sender, EventArgs e)
 //    {
@@ -86,37 +248,6 @@ public abstract class LevelDisplay : ComponentBase /*ILevelDisplay*/
 //        //}
 //        //todo
 //        CurrentQuestionSet = currentLevelHash.OrderBy(x => Guid.NewGuid()).ToList();
-//    }
-
-
-//    public void LoadQuestion()
-//    {
-//        Random rnd = new Random();
-//        List<int> answerIndexes = new List<int> { 0, 1, 2 };
-//        var shuffledIndex = answerIndexes.OrderBy(a => rnd.Next()).ToList();
-
-//        CurrentQuestion = CurrentQuestionSet.First();
-//        CurrentQuestionSet.Remove(CurrentQuestion);
-//        LevelTitle = $"Level {LevelNumber.ToString()} Question {questionNumber.ToString()} - {CurrentQuestionSet.Count} left. Attempts: {attempts}. Score: {score}.";
-//    }
-
-
-//    public virtual async Task<bool> CheckAnswer()
-//    {
-//        bool isCorrect = true; //todo
-//        await UpdateScore(isCorrect);
-//        return isCorrect;
-//    }
-
-//    public async Task UpdateScore(bool isCorrect)
-//    {
-//        if (isCorrect)
-//        {
-//            score++;
-//            questionNumber++;
-//        }
-//        attempts++;
-//        LevelTitle = $"Level {LevelNumber.ToString()} Question {questionNumber.ToString()} - {CurrentQuestionSet.Count} left. Attempts: {attempts}. Score: {score}.";
 //    }
 
 //    //public void GetFormattedImageAttribution()
@@ -160,17 +291,6 @@ public abstract class LevelDisplay : ComponentBase /*ILevelDisplay*/
 
 //    //    ImageAttribution = fs;
 //    //}
-
-//    public async void ClickedHint(object sender, EventArgs e)
-//    {
-//        //Button button = sender as Button;
-//        //await Task.Yield();
-//        //button.IsEnabled = false;
-//        //await SpeakAnswer();
-//        //button.IsEnabled = true;
-
-//        //todo
-//    }
 
 //    public async void ResetLevel(object sender, EventArgs e)
 //    {
