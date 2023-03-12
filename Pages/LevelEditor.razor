@@ -1,12 +1,18 @@
 ﻿@page "/editor/{levelNumber:int}/{*levelType}"
 
-@attribute [Authorize]
 
-<h3>Editor for @levelNumber @levelType</h3>
+
+@*@attribute [Authorize]*@
+
+<h3>@levelNumber @levelType</h3>
+
+
 
 @code {
     [Parameter]
     public int levelNumber { get; set; }
     [ParameterAttribute]
     public string levelType { get; set; }
+
+
 }

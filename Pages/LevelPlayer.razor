@@ -3,19 +3,19 @@
 @inject SpeechSynthesis speaker
 @inject SweetAlertService swal
 
-@page "/levels/{levelNumber:int}/{*levelType}"
+@page "/levels/{LevelNumber:int}/{*LevelType}"
 
-<h3>Level @levelNumber @levelType</h3>
+<h3>Level @LevelNumber @LevelType</h3>
 
 <div>
     @{
-        var parameters = new { LevelNumber = levelNumber, LevelType = levelType, Speaker = speaker, Swal = swal};
+        var parameters = new { LevelNumber = LevelNumber, LevelType = LevelType, Speaker = speaker, Swal = swal};
         var attributes = parameters.GetType().GetProperties()
         .Select(p => new KeyValuePair<string, object>(p.Name, p.GetValue(parameters, null)))
         .ToArray();
 
 
-        switch (levelType)
+        switch (LevelType)
         {
             case "multiplechoice":
                 <LevelDisplayMC @attributes=attributes />
@@ -35,7 +35,7 @@
 
 @code {
     [Parameter]
-    public int levelNumber { get; set; }
+    public int LevelNumber { get; set; }
     [ParameterAttribute]
-    public string levelType { get; set; }
+    public string LevelType { get; set; }
 }

@@ -1,0 +1,99 @@
+﻿@inject SweetAlertService Swal
+@inject NavigationManager NavMan
+
+@page "/selector/{LevelNumber:int}/{*LevelType}"
+
+<h3>Level</h3>
+
+
+
+<div>
+    @{
+        <AuthorizeView>
+            <Authorized>
+                <button class="btn btn-primary" @onclick="ToggleEdit">@PlayOrEdit</button>
+                <button class="btn btn-primary" @onclick="AddQuestionSet">Add</button>
+            </Authorized>
+        </AuthorizeView>
+
+        <button class="btn btn-primary" @onclick="ToggleEdit">@PlayOrEdit</button>
+        if (IsEditing)
+        {
+            <button class="btn btn-primary" @onclick="AddQuestionSet">Add</button>
+        }
+
+        foreach (QuestionSet questionSet in QuestionSets)
+        {
+            if (questionSet.LevelNumber == LevelNumber && questionSet.LevelType == LevelType)
+            {
+                <div>
+                    <button @onclick="() => OpenQuestionSet(questionSet)">@questionSet.Name Last Modified: @questionSet.LastModifiedDate</button>
+                    @if (IsEditing)
+                    {
+                        <button @onclick="() =>DeleteQuestionSet(questionSet)">Delete</button>
+                    }
+                </div>
+            }
+        }
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public int LevelNumber { get; set; }
+    [ParameterAttribute]
+    public string LevelType { get; set; }
+
+    public bool IsEditing { get; set; } = false;
+    public string PlayOrEdit { get; set; } = "Playing";
+
+    public List<QuestionSet> QuestionSets { get; set; } = new();
+
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    //await LoadQuestionSets();
+    //}
+
+
+    private async Task LoadQuestionSets()
+    {
+        //var result = await supabase.From<QuestionSet>().Get();
+        //QuestionSets = result.Models;
+    }
+
+    public void OpenQuestionSet(QuestionSet questionSet)
+    {
+        NavMan.NavigateTo($"/editor/{LevelNumber}/{LevelType}/");
+    }
+
+    public void ToggleEdit()
+    {
+        IsEditing = !IsEditing;
+        PlayOrEdit = IsEditing ? "Editing" : "Playing";
+    }
+
+    public async Task AddQuestionSet()
+    {
+        SweetAlertResult result = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Enter a name for your new question set.",
+                Input = "text",
+                InputPlaceholder = "Name",
+                ShowCancelButton = true,
+                InputValidator = new InputValidatorCallback((string input) => input.Length == 0 ? "Please enter a name." : null, this),
+
+            });
+
+        //var questionSet = new QuestionSet
+        //    {
+        //        Name = result.Value
+        //    };
+        //await supabase.From<QuestionSet>().Insert(questionSet);
+    }
+
+    public void DeleteQuestionSet(QuestionSet questionSet)
+    {
+        QuestionSets.Remove(questionSet);
+    }
+}

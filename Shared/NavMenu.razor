@@ -34,12 +34,12 @@
             </li>
             ShowLevelSubmenu(NavSubmenu.levels);
 
-            <li class="nav-item">
-                <NavLink class="nav-link" @onclick="() => ToggleSubmenu(NavSubmenu.editor)">
-                    <span class="oi oi-pencil" aria-hidden="true"></span> Level Editor
-                </NavLink>
-            </li>
-            ShowLevelSubmenu(NavSubmenu.editor);
+            //<li class="nav-item">
+            //    <NavLink class="nav-link" @onclick="() => ToggleSubmenu(NavSubmenu.editor)">
+            //        <span class="oi oi-pencil" aria-hidden="true"></span> Level Editor
+            //    </NavLink>
+            //</li>
+            //ShowLevelSubmenu(NavSubmenu.editor);
 
             <li class="nav-item">
                 <NavLink class="nav-link" href="settings">
@@ -218,10 +218,9 @@
 
     private void ChooseType(OpenedLevel level, NavType type)
     {
-        string place = level.navSubmenu.ToString();
         string levelNum = level.navLevel.ToString();
         string levelType = type.ToString();
 
-        NavMan.NavigateTo($"{place}/{levelNum}/{levelType}");
+        NavMan.NavigateTo($"selector/{levelNum}/{levelType}");
     }
 }
