@@ -11,8 +11,8 @@
   "resources": {
     "assembly": {
       "CurrieTechnologies.Razor.SweetAlert2.dll": "sha256-13AztQUDDqq2Jd9CwLCnrR+5FL\/vmPwHGSBFTMU+MJM=",
-      "EnglishChallengesWebApp.dll": "sha256-jA86urFdnsDJXvix5AU12WtuHadiydgZgQdsVSUZ09Q=",
-      "Microsoft.AspNetCore.Authorization.dll": "sha256-FGvjgkhw0ClyF\/Xg1LV3mLgyY1u+CPbjB1VLLJUw4h4=",
+      "EnglishChallengesWebApp.dll": "sha256-09iT7c\/A\/iEcjnTB6Awq9J7vPVuUXhRb3zM59rLEtmc=",
+      "Microsoft.AspNetCore.Authorization.dll": "sha256-7fN0ukwwbbkPKaStbiZQJfJzUsdaV6k2XuM6ajteQkA=",
       "Microsoft.AspNetCore.Components.Authorization.dll": "sha256-\/4W9n7HrhUwFWiMb8I0S4nyPEhPgmF+Cp4e5zjVwL\/I=",
       "Microsoft.AspNetCore.Components.dll": "sha256-iK7zCTocUA3yCk6MhAP\/ueqX1pFBwWKgDCFuLbUWHCk=",
       "Microsoft.AspNetCore.Components.Web.dll": "sha256-0yCcULHtWBrHOqJJi1m34+Xd+S67k7NMo\/JdsZfvcpM=",
@@ -45,13 +45,13 @@
       "System.Net.Http.Json.dll": "sha256-XnkC\/gRnSOcysCqjfScengM\/WP9\/Kj7m5YnHcshq2VE=",
       "System.Net.Primitives.dll": "sha256-ajFzrovIcALXAxYU2LKbT31dShjCOcmkdrHJDn3Ibfo=",
       "System.ObjectModel.dll": "sha256-D\/uv157htR5lX1+qg5zgX+\/b\/XdbUdgCz+6JAgGedIk=",
-      "System.Private.CoreLib.dll": "sha256-BVFcrAULCP14LO9\/EkYHeb3pRkc1utyU16JpGWtBSJE=",
+      "System.Private.CoreLib.dll": "sha256-km9vuKve0RlpUQ1zmzVwEO2CTprMPcDwDde7FNrHwes=",
       "System.Private.Uri.dll": "sha256-KhmVJoywmG3kKcRGX9DkYhLv9zRZNbqsgEotWYSK5BI=",
       "System.Runtime.dll": "sha256-qcPfgpI+3wEcb3M3DNdBeFvP1vQrAFcYR+3iB4CJV38=",
       "System.Runtime.InteropServices.JavaScript.dll": "sha256-IhmhXzzO60OoH+wLFM5KuYihvi5jEDXvIiOZzV\/5i4o=",
       "System.Security.Claims.dll": "sha256-tkIhuur5Cx64Qfx39hDYO9S0FO0Gy2nRXxIjM3XZM2U=",
       "System.Text.Encodings.Web.dll": "sha256-hnmkcWS1u4akDjNnEVBY3N9HGT+VmFajs8yg5AdB2mo=",
-      "System.Text.Json.dll": "sha256-6HK0HyWX99qv9ktnFgP87ZyKYbILUVaP0ZXz7R9r1fw=",
+      "System.Text.Json.dll": "sha256-SYZsNwB0rS4iXbbjiuEmPMzU9o0PlWpI4+kvM0Vt4YQ=",
       "System.Threading.dll": "sha256-6WJWQ\/nPNUThvndJ0gABv4Bs4DPe9jGS\/fvQ87Uoc\/E=",
       "Toolbelt.Blazor.SpeechSynthesis.dll": "sha256-hwFeUPcjtnElIo8NJgyNUAJudHHArubobvWhvLIeC3Y="
     },
