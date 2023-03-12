@@ -1,18 +1,151 @@
-﻿@page "/editor/{levelNumber:int}/{*levelType}"
+﻿@using EnglishChallengesWebApp.Resources.Model
 
+@inject Client supabase
+@inject SweetAlertService Swal
+
+@page "/Editing/{LevelNumber:int}/{LevelType}/{QuestionSetId:int}"
 
 
 @*@attribute [Authorize]*@
 
-<h3>@levelNumber @levelType</h3>
+
+<head>
+    <meta charset="utf-8" />
+    <title>LevelEditorPage</title>
+</head>
+<body>
+
+    <AuthorizeView>
+        <Authorized>
+            <button class="btn btn-primary" @onclick="ToggleEdit">Edit</button>
+            <button class="btn btn-primary" @onclick="AddQuestion">Add</button>
+        </Authorized>
+    </AuthorizeView>
+
+    <div>
+        @{
+            <button class="btn btn-primary" @onclick="ToggleEdit">Edit</button>
+            if (isEditing)
+            {
+                <button class="btn btn-primary" @onclick="AddQuestion">Add</button>
+            }
+        }
+    </div>
+    @if (isEditing)
+    {
+        <div>
+            <span>
+                <label>Correct Answer</label>
+                <input @bind="@CorrectAnswer" @oninput="@((e) => { CorrectAnswer=(string)e.Value;})" class="swal2-input">
+
+                <label>Wrong Answer 1</label>
+                <input @bind="@WrongAnswer1" @oninput="@((e) => { WrongAnswer1=(string)e.Value;})" class="swal2-input">
+
+                <label>Wrong Answer 2</label>
+                <input @bind="@WrongAnswer2" @oninput="@((e) => { WrongAnswer2=(string)e.Value;})" class="swal2-input">
+            </span>
+
+        </div>
+    }
+    <div>
+        @{
+            int index = 0;
+            foreach (Question question in Questionlist)
+            {
+                int i = index;
+                if (isEditing)
+                {
+                    <button class="btn btn-danger" @onclick="() => RemoveQuestion(i)">Delete</button>
+                }
+                <label>@question.CorrectAnswer</label>
+                <label>@question.WrongAnswer1</label>
+                <label>@question.WrongAnswer2</label>
+
+                index++;
+            }
+        }
+    </div>
+</body>
 
 
 
 @code {
     [Parameter]
-    public int levelNumber { get; set; }
+    public int LevelNumber { get; set; }
     [ParameterAttribute]
-    public string levelType { get; set; }
+    public string LevelType { get; set; }
+    [Parameter]
+    public int QuestionSetId { get; set; }
+    public List<Question> Questionlist { get; set; } = new();
+    public HashSet<Question> QuestionHashSet { get; set; }
+
+    private bool isEditing { get; set; } = false;
+
+    string CorrectAnswer { get; set; }
+    string WrongAnswer1 { get; set; }
+    string WrongAnswer2 { get; set; }
 
 
+    protected override async Task OnInitializedAsync()
+    {
+        QuestionHashSet = new();
+        await LoadQuestionSet();
+    }
+
+
+    private async Task LoadQuestionSet()
+    {
+        var result = await supabase.From<QuestionSet>().Where(x => x.Id == QuestionSetId).Select(x => new object[] { x.Questions }).Single();
+        if (result.Questions != null)
+        {
+            QuestionHashSet = result.Questions;
+            Questionlist = QuestionHashSet.ToList();
+        }
+    }
+
+    private void ToggleEdit()
+    {
+        isEditing = !isEditing;
+    }
+
+    private async Task AddQuestion()
+    {
+        if (!string.IsNullOrEmpty(CorrectAnswer))
+        {
+            Question question = new();
+            question.CorrectAnswer = CorrectAnswer;
+            question.WrongAnswer1 = WrongAnswer1;
+            question.WrongAnswer2 = WrongAnswer2;
+            QuestionHashSet.Add(question);
+
+            await UpdateQuestionSet();
+            await LoadQuestionSet();
+        }
+        else
+        {
+            SweetAlertResult result = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Icon = "error",
+                    Title = "Oops...",
+                    Text = "It seems like you have not entered an answer for your new question.",
+                });
+        }
+    }
+
+    private async Task RemoveQuestion(int index)
+    {
+        Console.WriteLine(index.ToString());
+        Questionlist.RemoveAt(index);
+        QuestionHashSet = Questionlist.ToHashSet();
+        await UpdateQuestionSet();
+    }
+
+    private async Task UpdateQuestionSet()
+    {
+        var update = await supabase
+      .From<QuestionSet>()
+      .Where(x => x.Id == QuestionSetId)
+      .Set(x => x.Questions, QuestionHashSet)
+      .Update();
+    }
 }

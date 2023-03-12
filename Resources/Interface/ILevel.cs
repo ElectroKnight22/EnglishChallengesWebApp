@@ -1,5 +1,8 @@
-﻿public interface ILevel
+﻿namespace EnglishChallengesWebApp.Resources.Interface
 {
-    int LevelNumber { get; }
-    string LevelType { get; }
+    public interface ILevel
+    {
+        int LevelNumber { get; }
+        string LevelType { get; }
+    }
 }

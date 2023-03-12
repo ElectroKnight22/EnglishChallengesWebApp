@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using EnglishChallengesWebApp.Resources.Interface;
+using Microsoft.AspNetCore.Components;
 
 namespace EnglishChallengesWebApp.Resources.Model
 {

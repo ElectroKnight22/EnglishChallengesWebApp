@@ -1,13 +1,16 @@
-﻿@inject SweetAlertService Swal
+﻿@using EnglishChallengesWebApp.Resources.Model
+
+@inject Client supabase
+@inject SweetAlertService Swal
 @inject NavigationManager NavMan
 
-@page "/selector/{LevelNumber:int}/{*LevelType}"
+@page "/Selecting/{LevelNumber:int}/{*LevelType}"
 
 <h3>Level</h3>
 
 
 
-<div>
+<body>
     @{
         <AuthorizeView>
             <Authorized>
@@ -17,7 +20,7 @@
         </AuthorizeView>
 
         <button class="btn btn-primary" @onclick="ToggleEdit">@PlayOrEdit</button>
-        if (IsEditing)
+        if (isEditing)
         {
             <button class="btn btn-primary" @onclick="AddQuestionSet">Add</button>
         }
@@ -27,16 +30,16 @@
             if (questionSet.LevelNumber == LevelNumber && questionSet.LevelType == LevelType)
             {
                 <div>
-                    <button @onclick="() => OpenQuestionSet(questionSet)">@questionSet.Name Last Modified: @questionSet.LastModifiedDate</button>
-                    @if (IsEditing)
+                    @if (isEditing)
                     {
-                        <button @onclick="() =>DeleteQuestionSet(questionSet)">Delete</button>
+                        <button class="btn btn-danger" @onclick="() =>RemoveQuestionSet(questionSet)">Delete</button>
                     }
+                    <button class="btn btn-primary" @onclick="() => OpenQuestionSet(questionSet)">@questionSet.Name</button>
                 </div>
             }
         }
     }
-</div>
+</body>
 
 @code {
 
@@ -45,32 +48,32 @@
     [ParameterAttribute]
     public string LevelType { get; set; }
 
-    public bool IsEditing { get; set; } = false;
+    private bool isEditing { get; set; } = false;
     public string PlayOrEdit { get; set; } = "Playing";
 
     public List<QuestionSet> QuestionSets { get; set; } = new();
 
-    //protected override async Task OnInitializedAsync()
-    //{
-    //    //await LoadQuestionSets();
-    //}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadQuestionSets();
+    }
 
 
     private async Task LoadQuestionSets()
     {
-        //var result = await supabase.From<QuestionSet>().Get();
-        //QuestionSets = result.Models;
+        var result = await supabase.From<QuestionSet>().Get();
+        QuestionSets = result.Models;
     }
 
     public void OpenQuestionSet(QuestionSet questionSet)
     {
-        NavMan.NavigateTo($"/editor/{LevelNumber}/{LevelType}/");
+        NavMan.NavigateTo($"{PlayOrEdit}/{LevelNumber}/{LevelType}/{questionSet.Id}/");
     }
 
     public void ToggleEdit()
     {
-        IsEditing = !IsEditing;
-        PlayOrEdit = IsEditing ? "Editing" : "Playing";
+        isEditing = !isEditing;
+        PlayOrEdit = isEditing ? "Editing" : "Playing";
     }
 
     public async Task AddQuestionSet()
@@ -82,18 +85,27 @@
                 InputPlaceholder = "Name",
                 ShowCancelButton = true,
                 InputValidator = new InputValidatorCallback((string input) => input.Length == 0 ? "Please enter a name." : null, this),
-
             });
 
-        //var questionSet = new QuestionSet
-        //    {
-        //        Name = result.Value
-        //    };
-        //await supabase.From<QuestionSet>().Insert(questionSet);
+        if (!string.IsNullOrEmpty(result.Value))
+        {
+            DateTime now = DateTime.Now;
+            string nowTimestamp = now.ToString("yyyy/MM/dd hh:mm tt");
+            var questionSet = new QuestionSet
+                {
+                    Name = result.Value,
+                    LevelNumber = this.LevelNumber,
+                    LevelType = this.LevelType,
+                    LastModifiedDate = nowTimestamp,
+                };
+            await supabase.From<QuestionSet>().Insert(questionSet);
+            await LoadQuestionSets();
+        }
     }
 
-    public void DeleteQuestionSet(QuestionSet questionSet)
+    public async Task RemoveQuestionSet(QuestionSet questionSet)
     {
-        QuestionSets.Remove(questionSet);
+        await supabase.From<QuestionSet>().Where(x => x.Id == questionSet.Id).Delete();
+        await LoadQuestionSets();
     }
 }

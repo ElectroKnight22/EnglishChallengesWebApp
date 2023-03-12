@@ -1,15 +1,25 @@
 ﻿@using EnglishChallengesWebApp.Pages.LevelDisplays
+@using EnglishChallengesWebApp.Resources.Model
 
 @inject SpeechSynthesis speaker
 @inject SweetAlertService swal
+@inject Client supabase
 
-@page "/levels/{LevelNumber:int}/{*LevelType}"
+@page "/Playing/{LevelNumber:int}/{LevelType}/{QuestionSetId:int}"
 
 <h3>Level @LevelNumber @LevelType</h3>
 
-<div>
+<body>
     @{
-        var parameters = new { LevelNumber = LevelNumber, LevelType = LevelType, Speaker = speaker, Swal = swal};
+        var parameters = new
+        {
+            LevelNumber = LevelNumber,
+            LevelType = LevelType,
+            QuestionSetId = QuestionSetId,
+            Speaker = speaker,
+            Swal = swal,
+            supabase = supabase,
+        };
         var attributes = parameters.GetType().GetProperties()
         .Select(p => new KeyValuePair<string, object>(p.Name, p.GetValue(parameters, null)))
         .ToArray();
@@ -31,11 +41,15 @@
                 break;
         }
     }
-</div>
+</body>
 
 @code {
     [Parameter]
     public int LevelNumber { get; set; }
     [ParameterAttribute]
-    public string LevelType { get; set; }
+    public string LevelType { get; set; } = string.Empty;
+    [Parameter]
+    public int QuestionSetId { get; set; }
+    [Parameter]
+    public List<Question> Questions { get; set; } = new();
 }

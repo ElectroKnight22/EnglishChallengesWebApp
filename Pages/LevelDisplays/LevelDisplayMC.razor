@@ -1,4 +1,6 @@
-﻿@inherits LevelDisplay
+﻿@using EnglishChallengesWebApp.Resources.Model
+
+@inherits LevelDisplay
 
 <div>
     <label style="font-size:16px; text-align:center;">@LevelTitle</label>
@@ -8,9 +10,9 @@
 </div>
 <label style="font-size:16px; text-align:center;">Please select the best choice.</label>
 <div style="display:flex; justify-content:center;">
-    <button disabled=@AnswerButtonDisabled @onclick="() => ChooseAnswer(0)" style="margin-right:25px;">@AnswerTexts[0]</button>
-    <button disabled=@AnswerButtonDisabled @onclick="() => ChooseAnswer(1)" style="margin-right:25px;">@AnswerTexts[1]</button>
-    <button disabled=@AnswerButtonDisabled @onclick="() => ChooseAnswer(2)" style="margin-right:25px;">@AnswerTexts[2]</button>
+    <button disabled=@AnsweringDisabled @onclick="() => ChooseAnswer(0)" style="margin-right:25px;">@AnswerTexts[0]</button>
+    <button disabled=@AnsweringDisabled @onclick="() => ChooseAnswer(1)" style="margin-right:25px;">@AnswerTexts[1]</button>
+    <button disabled=@AnsweringDisabled @onclick="() => ChooseAnswer(2)" style="margin-right:25px;">@AnswerTexts[2]</button>
 </div>
 <div style="display:flex; justify-content:center;">
     <button class="btn btn-primary" id="HintBtn" @onclick="GiveHint" style="margin-top:25px;">HINT</button>
@@ -18,12 +20,11 @@
 <div style="display:flex; justify-content:center;">
     <button class="btn btn-primary" id="ResetBtn" @onclick="ResetLevel" style="margin-top:50px;">Reset Level</button>
 </div>
-<div>@AnswerButtonDisabled</div>
+<div>@AnsweringDisabled</div>
 
 
 
 @code {
-
     //public override void UpdateQuestionImage()
     //{
     //    QuestionImageLayout.Clear();

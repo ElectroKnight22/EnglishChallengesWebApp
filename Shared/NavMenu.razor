@@ -154,7 +154,7 @@
             this.navLevel = level;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals( object obj)
         {
             if (obj == null || GetType() != obj.GetType())
             {
@@ -221,6 +221,6 @@
         string levelNum = level.navLevel.ToString();
         string levelType = type.ToString();
 
-        NavMan.NavigateTo($"selector/{levelNum}/{levelType}");
+        NavMan.NavigateTo($"Selecting/{levelNum}/{levelType}");
     }
 }
