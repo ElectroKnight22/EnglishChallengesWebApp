@@ -12,7 +12,7 @@
     "assembly": {
       "Core.dll": "sha256-QJ+6Yc+9oFUZt8\/PAd9A2Hfg9GB86Df6pr7\/aonG0yE=",
       "CurrieTechnologies.Razor.SweetAlert2.dll": "sha256-13AztQUDDqq2Jd9CwLCnrR+5FL\/vmPwHGSBFTMU+MJM=",
-      "EnglishChallengesWebApp.dll": "sha256-lKiQphl3DhLIkowLr2dq59kOX9bjtg4z32Qn7wStW1A=",
+      "EnglishChallengesWebApp.dll": "sha256-4+wzOIaZ9q+I7xw76dN7+M8Dp3tdx48v1wT0qN6\/Aig=",
       "Functions.dll": "sha256-ecNzX3QWzFkgI61aW\/v3iEbZb5HsgZl8+Wt0rfvnQMI=",
       "Gotrue.dll": "sha256-83Op+7lZarkOXzplstzy+tkz186jz06sQ1By3cFUMQM=",
       "Microsoft.AspNetCore.Authorization.dll": "sha256-7fN0ukwwbbkPKaStbiZQJfJzUsdaV6k2XuM6ajteQkA=",
@@ -49,7 +49,7 @@
       "System.ComponentModel.dll": "sha256-btqatMrsfHuC\/bYU\/cdL\/+7tQdAiwwdulOc48U9VmTM=",
       "System.ComponentModel.Primitives.dll": "sha256-EkjdrIuo48IAOx5F0qkpIa6r9hIpCu1gLXtX5oX\/wL4=",
       "System.ComponentModel.TypeConverter.dll": "sha256-Fcc0XtlNVw819CU\/hQJRKLiUF+lYaWxVQwBNnrWCCcY=",
-      "System.Console.dll": "sha256-CpOohD7Kfod7xL+Kz\/EjsAy7Jvly8QasRZDdMIS9xyc=",
+      "System.Console.dll": "sha256-N+g8zA4lFVCaw7oDCLgv9hq\/gGZl4F3rJQGEhSBjBNI=",
       "System.Data.Common.dll": "sha256-LEMvHRsI8rApsYRdVJ\/O9bkNZ3WGwf2BCrqNLIdrA5E=",
       "System.Diagnostics.StackTrace.dll": "sha256-z5gIJvVBfLpBBMcvPK2\/RHlW7oSUyZUkABLBHiGeKcg=",
       "System.Diagnostics.TraceSource.dll": "sha256-t9rx3vK5h2N2E\/VN05ts7Vihdcnz2DyC85YgoIl5Vzs=",
