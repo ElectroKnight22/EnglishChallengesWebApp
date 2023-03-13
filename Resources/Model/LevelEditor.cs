@@ -1,9 +1,8 @@
 ﻿using EnglishChallengesWebApp.Resources.Interface;
-using Microsoft.AspNetCore.Components;
 
 namespace EnglishChallengesWebApp.Resources.Model
 {
-    public class LevelEditor : ComponentBase, ILevelEditor
+    public class LevelEditor : SupabaseClient
     {
         public int LevelNumber => throw new NotImplementedException();
 

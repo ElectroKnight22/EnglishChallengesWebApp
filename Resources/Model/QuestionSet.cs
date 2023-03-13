@@ -7,13 +7,13 @@ namespace EnglishChallengesWebApp.Resources.Model
     public class QuestionSet : BaseModel
     {
         [PrimaryKey("id", false)] public int Id { get; set; }
-        [Column("name")] public string Name { get; set; }
-        [Column("level_type")] public string LevelType { get; set; }
-        [Column("level_number")] public int LevelNumber { get; set; }
-        [Column("last_modified")] public string LastModifiedDate { get; set; }
+        [Column("name")] public string Name { get; set; } = string.Empty;
+        [Column("level_type")] public string LevelType { get; set; } = string.Empty;
+        [Column("level_number")] public int LevelNumber { get; set; } = 0;
+        [Column("last_modified")] public string? LastModifiedDate { get; set; }
         [Column("is_published")] public bool IsPublished { get; set; } = false;
 
-        [Column("questions_json")] public HashSet<Question> Questions { get; set; }
+        [Column("questions_json")] public HashSet<Question>? Questions { get; set; }
 
         public override bool Equals(object obj)
         {

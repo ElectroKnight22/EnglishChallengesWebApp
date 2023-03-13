@@ -2,8 +2,7 @@
 @using Newtonsoft.Json
 @using Supabase.Storage
 
-@inject Supabase.Client supabase
-@inject SweetAlertService Swal
+@inherits Level
 
 @page "/Editing/{LevelNumber:int}/{LevelType}/{QuestionSetId:int}"
 
@@ -19,90 +18,83 @@
 
     <AuthorizeView>
         <Authorized>
-            <button class="btn btn-primary" @onclick="ToggleEdit">Edit</button>
+            <button class="btn btn-primary" @onclick="ToggleDelete">Edit</button>
             <button class="btn btn-primary" @onclick="AddQuestion">Add</button>
         </Authorized>
     </AuthorizeView>
 
+
     <div>
-        @{
-            <button class="btn btn-primary" @onclick="ToggleEdit">Edit</button>
-            if (isEditing)
+        <p>
+            <label>Correct Answer:</label>
+            <input @bind="@CorrectAnswer" @oninput="@((e) => { CorrectAnswer=(string)e.Value;})">
+        </p>
+        <p>
+            <label>Wrong Answer 1:</label>
+            <input @bind="@WrongAnswer1" @oninput="@((e) => { WrongAnswer1=(string)e.Value;})">
+        </p>
+        <p>
+            <label>Wrong Answer 2:</label>
+            <input @bind="@WrongAnswer2" @oninput="@((e) => { WrongAnswer2=(string)e.Value;})">
+        </p>
+        <p>
+            @if (LoadedFile == null)
             {
-                <button class="btn btn-primary" @onclick="AddQuestion">Add</button>
+                <label>Image link OR name in gallery:</label>
+                <input @bind="@ImageSource" @oninput="@((e) => { ImageSource=(string)e.Value;})">
+                <label> or </label>
             }
-        }
-    </div>
-    @if (isEditing)
-    {
-        <div>
-            <p>
-                <label>Correct Answer:</label>
-                <input @bind="@CorrectAnswer" @oninput="@((e) => { CorrectAnswer=(string)e.Value;})">
-            </p>
-            <p>
-                <label>Wrong Answer 1:</label>
-                <input @bind="@WrongAnswer1" @oninput="@((e) => { WrongAnswer1=(string)e.Value;})">
-            </p>
-            <p>
-                <label>Wrong Answer 2:</label>
-                <input @bind="@WrongAnswer2" @oninput="@((e) => { WrongAnswer2=(string)e.Value;})">
-            </p>
-            <p>
-                @if (loadedFile == null)
+
+            @*Image uploader*@
+            <span>
+                @if (string.IsNullOrEmpty(ImageSource))
                 {
-                    <label>Image link OR name in gallery:</label>
-                    <input @bind="@ImageSource" @oninput="@((e) => { ImageSource=(string)e.Value;})">
-                    <label> or </label>
-                }
+                    <p>
+                        <label>
+                            Upload an image up to @(allowFileSizeKB) KB:
+                            <InputFile OnChange="@LoadFile" accept="image/*" multiple />
+                        </label>
+                        @if (LoadedFile != null)
+                        {
+                            <button @onclick="CancelUpload">@(IsUploading ? "Uploading..." : "Cancel")</button>
+                        }
+                    </p>
 
-                @*Image uploader*@
-                <span>
-                    @if (string.IsNullOrEmpty(ImageSource))
+                    if (IsLoading)
                     {
-                        <p>
-                            <label>
-                                Upload an image up to @(allowFileSizeKB) KB:
-                                <InputFile OnChange="@LoadFile" accept="image/*" multiple />
-                            </label>
-                            @if (loadedFile != null)
-                            {
-                                <button @onclick="CancelUpload">@isUploading</button>
-                            }
-                        </p>
-
-                        if (isLoading)
-                        {
-                            <p>Uploading...</p>
-                        }
-                        else
-                        {
-                            <ul>
-                                @if (loadedFile != null)
-                                {
-                                    string textColorString = "color:#000000";
-                                    if (loadedFile.Size > maxFileSize) { textColorString = "color:#FF0000"; }
-                                    <ul>
-                                        <li>Name: @loadedFile.Name</li>
-                                        <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)loadedFile.Size / 1024))</li>
-                                    </ul>
-                                }
-                            </ul>
-                        }
+                        <p>Uploading...</p>
                     }
-                </span>
-            </p>
+                    else
+                    {
+                        <ul>
+                            @if (LoadedFile != null)
+                            {
+                                string textColorString = "color:#000000";
+                                if (LoadedFile.Size > maxFileSize) { textColorString = "color:#FF0000"; }
+                                <ul>
+                                    <li>Name: @LoadedFile.Name</li>
+                                    <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)LoadedFile.Size / 1024))</li>
+                                </ul>
+                            }
+                        </ul>
+                    }
+                }
+            </span>
+        </p>
 
-        </div>
-    }
+    </div>
+    <div>
+        <button class="btn btn-primary" @onclick="AddQuestion">Add</button>
+        <button class="btn btn-primary" @onclick="ToggleDelete">@(isDeleting ? "Deleting" : "Delete")</button>
+    </div>
     <div>
         @{
             int index = 0;
-            foreach (Question question in Questionlist)
+            foreach (Question question in QuestionList)
             {
                 int i = index;
                 <p>
-                    @if (isEditing)
+                    @if (isDeleting)
                     {
                         <button class="btn btn-danger" @onclick="() => RemoveQuestion(i)">Delete</button>
                     }
@@ -123,32 +115,12 @@
 
 
 @code {
-    [Parameter]
-    public int LevelNumber { get; set; }
-    [ParameterAttribute]
-    public string LevelType { get; set; }
-    [Parameter]
-    public int QuestionSetId { get; set; }
-    public List<Question> Questionlist { get; set; } = new();
-    public HashSet<Question> QuestionHashSet { get; set; }
+    bool isDeleting { get; set; } = false;
 
-    private static readonly string _storageName = "question-image-bank";
-    private static readonly string _CDNURL = "https://qhmtgkkbpwqfroujzubx.supabase.co/storage/v1/object/public/" + _storageName + "/";
-
-    static List<FileObject> databaseFiles { get; set; } = new();
-
-    private bool isEditing { get; set; } = false;
-
-    IBrowserFile loadedFile { get; set; }
-    private bool isLoading { get; set; } = false;
-    static private long allowFileSizeKB = 1500;
-    private long maxFileSize = 1024 * allowFileSizeKB;
-    private string isUploading { get; set; } = "Cancel";
-
-    string CorrectAnswer { get; set; }
-    string WrongAnswer1 { get; set; }
-    string WrongAnswer2 { get; set; }
-    string ImageSource { get; set; }
+    string CorrectAnswer { get; set; } = string.Empty;
+    string WrongAnswer1 { get; set; } = string.Empty;
+    string WrongAnswer2 { get; set; } = string.Empty;
+    string ImageSource { get; set; } = string.Empty;
 
 
     protected override async Task OnInitializedAsync()
@@ -157,72 +129,10 @@
         await RetrieveAllFiles();
         await LoadQuestionSet();
     }
-
-    private void LoadFile(InputFileChangeEventArgs e)
-    {
-        isLoading = true;
-
-        try
-        {
-            loadedFile = e.File;
-        }
-        catch (Exception ex)
-        {
-            //Logger.LogError("File: {FileName} Error: {Error}",
-            //    file.Name, ex.Message);
-        }
-
-        isLoading = false;
-    }
-
-    async Task UploadFile()
-    {
-        isUploading = "Uploading...";
-        try
-        {
-            using var stream = loadedFile.OpenReadStream(maxAllowedSize: maxFileSize);
-            byte[] fileBytes = new byte[stream.Length];
-            await stream.ReadAsync(fileBytes.AsMemory(0, (int)stream.Length));
-            await supabase.Storage.From(_storageName).Upload(fileBytes, loadedFile.Name, new FileOptions { CacheControl = "3600", Upsert = false });
-        }
-        catch
-        {
-            Console.WriteLine("There seems to be a problem uploading file " + loadedFile.Name);
-        }
-        loadedFile = null;
-        isUploading = "Cancel";
-        await RetrieveAllFiles();
-    }
-
-
-    void CancelUpload()
-    {
-        loadedFile = null;
-    }
-
-    private async Task LoadQuestionSet()
-    {
-        var result = await supabase.From<QuestionSet>().Where(x => x.Id == QuestionSetId).Select(x => new object[] { x.Questions }).Single();
-        if (result.Questions != null)
-        {
-            QuestionHashSet = result.Questions;
-            Questionlist = QuestionHashSet.ToList();
-        }
-    }
-
-
-
-    private void ToggleEdit()
-    {
-        isEditing = !isEditing;
-    }
-
-    private async Task AddQuestion()
+    async Task AddQuestion()
     {
         if (!string.IsNullOrEmpty(CorrectAnswer))
         {
-
-
             Question question = new();
             question.CorrectAnswer = CorrectAnswer;
             question.WrongAnswer1 = WrongAnswer1;
@@ -236,9 +146,9 @@
             {
                 question.ImageSource = _CDNURL + ImageSource;
             }
-            else if (loadedFile != null)
+            else if (LoadedFile != null)
             {
-                question.ImageSource = _CDNURL + loadedFile.Name;
+                question.ImageSource = _CDNURL + LoadedFile.Name;
                 await UploadFile();
             }
 
@@ -259,34 +169,30 @@
                 });
         }
     }
-
-    private async Task RemoveQuestion(int index)
+    async Task RemoveQuestion(int index)
     {
-        Questionlist.RemoveAt(index);
-        QuestionHashSet = Questionlist.ToHashSet();
+        QuestionList.RemoveAt(index);
+        QuestionHashSet = QuestionList.ToHashSet();
         await UpdateQuestionSet();
     }
-
-    private async Task UpdateQuestionSet()
+    async Task UpdateQuestionSet()
     {
-        var update = await supabase
+        var update = await Supabase
       .From<QuestionSet>()
       .Where(x => x.Id == QuestionSetId)
       .Set(x => x.Questions, QuestionHashSet)
       .Update();
     }
-
-    async Task RetrieveAllFiles()
+    void ToggleDelete()
     {
-        databaseFiles = await supabase.Storage.From(_storageName).List() ?? new();
+        isDeleting = !isDeleting;
     }
-
     void ClearInputs()
     {
         CorrectAnswer = string.Empty;
         WrongAnswer1 = string.Empty;
         WrongAnswer2 = string.Empty;
         ImageSource = string.Empty;
-        loadedFile = null;
+        LoadedFile = null;
     }
 }

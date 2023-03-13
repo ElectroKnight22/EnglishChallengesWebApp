@@ -12,9 +12,9 @@
 </div>
 <label style="font-size:16px; text-align:center;">Please select the best choice.</label>
 <div style="display:flex; justify-content:center;">
-    <button disabled=@AnsweringDisabled @onclick="() => ChooseAnswer(0)" style="margin-right:25px;">@AnswerTexts[0]</button>
-    <button disabled=@AnsweringDisabled @onclick="() => ChooseAnswer(1)" style="margin-right:25px;">@AnswerTexts[1]</button>
-    <button disabled=@AnsweringDisabled @onclick="() => ChooseAnswer(2)" style="margin-right:25px;">@AnswerTexts[2]</button>
+    <button disabled=@IsAnsweringDisabled @onclick="() => ChooseAnswer(0)" style="margin-right:25px;">@AnswerTexts[0]</button>
+    <button disabled=@IsAnsweringDisabled @onclick="() => ChooseAnswer(1)" style="margin-right:25px;">@AnswerTexts[1]</button>
+    <button disabled=@IsAnsweringDisabled @onclick="() => ChooseAnswer(2)" style="margin-right:25px;">@AnswerTexts[2]</button>
 </div>
 <div style="display:flex; justify-content:center;">
     <button class="btn btn-primary" id="HintBtn" @onclick="GiveHint" style="margin-top:25px;">HINT</button>
@@ -26,63 +26,4 @@
 
 
 @code {
-    //public override void UpdateQuestionImage()
-    //{
-    //    QuestionImageLayout.Clear();
-    //    QuestionImageLayout.Add(QuestionImage.Image);
-    //    //ImageAttribution.FormattedText = base.ImageAttribution;
-    //}
-
-    //public override void UpdateShownQuestion()
-    //{
-    //    Random rnd = new Random();
-    //    List<int> answerIndexes = new List<int> { 0, 1, 2 };
-    //    var shuffledIndex = answerIndexes.OrderBy(a => rnd.Next()).ToList();
-
-    //    AnswerBtn1.Id = shuffledIndex[0].ToString();
-    //    AnswerBtn2.ClassId = shuffledIndex[1].ToString();
-    //    AnswerBtn3.ClassId = shuffledIndex[2].ToString();
-
-    //    LoadOptionText(AnswerBtn1);
-    //    LoadOptionText(AnswerBtn2);
-    //    LoadOptionText(AnswerBtn3);
-
-    //}
-
-    //public override async void ChooseAnswer(object sender, EventArgs e)
-    //{
-    //    Button button = sender as Button;
-    //    await Task.Yield();
-    //    button.IsEnabled = false;
-    //    bool isCorrect = await CheckAnswer(button);
-    //    if (isCorrect) { await SpeakAnswer(); }
-    //    bool shouldUpdate = isCorrect;
-    //    await Update(shouldUpdate);
-    //    await Task.Delay(200);
-    //    button.IsEnabled = true;
-    //}
-
-    //public override async Task<bool> CheckAnswer(Button button)
-    //{
-    //    bool isCorrect = button.ClassId == "0";
-    //    await UpdateScore(isCorrect);
-    //    return isCorrect;
-    //}
-
-    //public override void LoadOptionText(Button button)
-    //{
-    //    int Id = int.Parse(button.ClassId);
-    //    switch (Id)
-    //    {
-    //        case 0:
-    //            button.Text = CurrentQuestion.CorrectAnswer.ToLower();
-    //            break;
-    //        case 1:
-    //            button.Text = CurrentQuestion.WrongAnswer1.ToLower();
-    //            break;
-    //        case 2:
-    //            button.Text = CurrentQuestion.WrongAnswer2.ToLower();
-    //            break;
-    //    }
-    //}
 }

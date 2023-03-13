@@ -8,18 +8,16 @@
 
 <h3>Level</h3>
 
-
-
 <body>
     @{
         <AuthorizeView>
             <Authorized>
-                <button class="btn btn-primary" @onclick="ToggleEdit">@PlayOrEdit</button>
+                <button class="btn btn-primary" @onclick="ToggleEdit">@(isEditing ? "Editing" : "Playing")</button>
                 <button class="btn btn-primary" @onclick="AddQuestionSet">Add</button>
             </Authorized>
         </AuthorizeView>
 
-        <button class="btn btn-primary" @onclick="ToggleEdit">@PlayOrEdit</button>
+        <button class="btn btn-primary" @onclick="ToggleEdit">@(isEditing ? "Editing" : "Playing")</button>
         if (isEditing)
         {
             <button class="btn btn-primary" @onclick="AddQuestionSet">Add</button>
@@ -32,9 +30,9 @@
                 <div>
                     @if (isEditing)
                     {
-                        <button class="btn btn-danger" @onclick="() =>RemoveQuestionSet(questionSet)">Delete</button>
+                        <button class="btn btn-danger" style="margin:10px;" @onclick="() =>RemoveQuestionSet(questionSet)">Delete</button>
                     }
-                    <button class="btn btn-primary" @onclick="() => OpenQuestionSet(questionSet)">@questionSet.Name</button>
+                    <button class="btn btn-primary" style="margin:10px;" @onclick="() => OpenQuestionSet(questionSet)">@questionSet.Name</button>
                 </div>
             }
         }
@@ -42,41 +40,31 @@
 </body>
 
 @code {
-
     [Parameter]
     public int LevelNumber { get; set; }
     [ParameterAttribute]
     public string LevelType { get; set; }
-
-    private bool isEditing { get; set; } = false;
-    public string PlayOrEdit { get; set; } = "Playing";
-
-    public List<QuestionSet> QuestionSets { get; set; } = new();
-
+    bool isEditing { get; set; } = false;
+    List<QuestionSet> QuestionSets { get; set; } = new();
     protected override async Task OnInitializedAsync()
     {
         await LoadQuestionSets();
     }
-
-
-    private async Task LoadQuestionSets()
+    async Task LoadQuestionSets()
     {
         var result = await supabase.From<QuestionSet>().Get();
         QuestionSets = result.Models;
     }
-
-    public void OpenQuestionSet(QuestionSet questionSet)
+    void OpenQuestionSet(QuestionSet questionSet)
     {
-        NavMan.NavigateTo($"{PlayOrEdit}/{LevelNumber}/{LevelType}/{questionSet.Id}/");
+        string place = isEditing ? "Editing" : "Playing";
+        NavMan.NavigateTo($"{place}/{LevelNumber}/{LevelType}/{questionSet.Id}/");
     }
-
-    public void ToggleEdit()
+    void ToggleEdit()
     {
         isEditing = !isEditing;
-        PlayOrEdit = isEditing ? "Editing" : "Playing";
     }
-
-    public async Task AddQuestionSet()
+    async Task AddQuestionSet()
     {
         SweetAlertResult result = await Swal.FireAsync(new SweetAlertOptions
             {
@@ -102,8 +90,7 @@
             await LoadQuestionSets();
         }
     }
-
-    public async Task RemoveQuestionSet(QuestionSet questionSet)
+    async Task RemoveQuestionSet(QuestionSet questionSet)
     {
         await supabase.From<QuestionSet>().Where(x => x.Id == questionSet.Id).Delete();
         await LoadQuestionSets();

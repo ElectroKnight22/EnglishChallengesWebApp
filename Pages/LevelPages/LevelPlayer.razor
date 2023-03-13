@@ -1,10 +1,6 @@
 ﻿@using EnglishChallengesWebApp.Pages.LevelPages.LevelDisplays
 @using EnglishChallengesWebApp.Resources.Model
 
-@inject SpeechSynthesis speaker
-@inject SweetAlertService swal
-@inject Client supabase
-
 @page "/Playing/{LevelNumber:int}/{LevelType}/{QuestionSetId:int}"
 
 <h3>Level @LevelNumber @LevelType</h3>
@@ -16,14 +12,10 @@
             LevelNumber = LevelNumber,
             LevelType = LevelType,
             QuestionSetId = QuestionSetId,
-            Speaker = speaker,
-            Swal = swal,
-            supabase = supabase,
         };
         var attributes = parameters.GetType().GetProperties()
         .Select(p => new KeyValuePair<string, object>(p.Name, p.GetValue(parameters, null)))
         .ToArray();
-
 
         switch (LevelType)
         {
@@ -50,6 +42,4 @@
     public string LevelType { get; set; } = string.Empty;
     [Parameter]
     public int QuestionSetId { get; set; }
-    [Parameter]
-    public List<Question> Questions { get; set; } = new();
 }

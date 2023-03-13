@@ -4,11 +4,11 @@ namespace EnglishChallengesWebApp.Resources.Model
 {
     public class Question
     {
-        public string CorrectAnswer { get; set; }
-        public string WrongAnswer1 { get; set; }
-        public string WrongAnswer2 { get; set; }
-        public string Prompt { get; set; }
-        public string ImageSource { get; set; }
+        public string CorrectAnswer { get; set; } = string.Empty;
+        public string WrongAnswer1 { get; set; } = string.Empty;
+        public string WrongAnswer2 { get; set; } = string.Empty;
+        public string Prompt { get; set; } = string.Empty;
+        public string ImageSource { get; set; } = string.Empty;
 
         public override bool Equals([AllowNull] object obj)
         {
