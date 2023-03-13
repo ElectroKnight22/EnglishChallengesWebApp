@@ -37,10 +37,12 @@
             <span>
                 <label>Correct Answer</label>
                 <input @bind="@CorrectAnswer" @oninput="@((e) => { CorrectAnswer=(string)e.Value;})" class="swal2-input">
-
+            </span>
+            <span>
                 <label>Wrong Answer 1</label>
                 <input @bind="@WrongAnswer1" @oninput="@((e) => { WrongAnswer1=(string)e.Value;})" class="swal2-input">
-
+            </span>
+            <span>
                 <label>Wrong Answer 2</label>
                 <input @bind="@WrongAnswer2" @oninput="@((e) => { WrongAnswer2=(string)e.Value;})" class="swal2-input">
             </span>
@@ -134,7 +136,6 @@
 
     private async Task RemoveQuestion(int index)
     {
-        Console.WriteLine(index.ToString());
         Questionlist.RemoveAt(index);
         QuestionHashSet = Questionlist.ToHashSet();
         await UpdateQuestionSet();

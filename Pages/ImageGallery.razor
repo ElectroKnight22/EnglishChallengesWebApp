@@ -1,0 +1,70 @@
+﻿@using Supabase.Storage
+
+@inject Supabase.Client supabase
+
+@page "/Gallery"
+
+<h3>ImageGallery</h3>
+
+<body>
+    <div>
+        <span>
+            <input @bind="@SearchQuery" @oninput="@((e) => { SearchQuery=(string)e.Value;})" class="swal2-input">
+            <button class="btn btn-primary" @onclick="SearchFile">Search</button>
+        </span>
+        <span>
+            <button>Upload</button>
+        </span>
+    </div>
+    <div>
+        @{
+            foreach (FileObject file in files)
+            {
+                string fileName = file.Name ?? string.Empty;
+                string source = _CDNURL + fileName;
+                <img src=@source alt=@fileName height="100">
+            }
+        }
+    </div>
+</body>
+
+@code {
+    private static readonly string _storageName = "question-image-bank";
+    private static readonly string _CDNURL = "https://qhmtgkkbpwqfroujzubx.supabase.co/storage/v1/object/public/" + _storageName + "/";
+    string SearchQuery { get; set; } = string.Empty;
+
+    List<FileObject> files { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RetrieveAllFiles();
+    }
+
+    void SearchFile()
+    {
+
+    }
+
+
+    void UploadFile()
+    {
+
+    }
+
+    void DeleteFile()
+    {
+
+    }
+
+    void UpdateFile()
+    {
+
+    }
+
+    async Task RetrieveAllFiles()
+    {
+        files = await supabase.Storage.From(_storageName).List() ?? new();
+    }
+
+
+}
