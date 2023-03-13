@@ -1,6 +1,8 @@
-﻿@using Supabase.Storage
+﻿@using Newtonsoft.Json
+@using Supabase.Storage
 
 @inject Supabase.Client supabase
+@inject SweetAlertService Swal
 
 @page "/Gallery"
 
@@ -8,21 +10,85 @@
 
 <body>
     <div>
+        @*        <span>
+        <input @bind="@searchQuery" @oninput="@((e) => { searchQuery=(string)e.Value;})">
+        <button class="btn btn-primary" @onclick="SearchFile">Search</button>
+        </span>*@
+        @*Real search is not yet supported by the c# implementation of Supabase.*@
         <span>
-            <input @bind="@SearchQuery" @oninput="@((e) => { SearchQuery=(string)e.Value;})" class="swal2-input">
-            <button class="btn btn-primary" @onclick="SearchFile">Search</button>
+            @{
+                <p>
+                    <label>
+                        Upload @(maxAllowedFiles == 0 ? "" : $"up to {maxAllowedFiles} ")images up to @(allowFileSizeKB) KB each:
+                        <InputFile OnChange="@LoadFiles" accept="image/*" multiple />
+                    </label>
+                    @if (loadedFiles.Any())
+                    {
+                        <button @onclick="UploadFile">@isUploading</button>
+                        <button @onclick="CancelUpload">Cancel</button>
+                    }
+                </p>
+
+                if (isLoading)
+                {
+                    <p>Uploading...</p>
+                }
+                else
+                {
+                    <ul>
+                        @foreach (var file in loadedFiles)
+                        {
+                            string textColorString = "color:#000000";
+                            if (file.Size > maxFileSize) { textColorString = "color:#FF0000"; }
+                            <li>
+                                <ul>
+                                    <li>Name: @file.Name</li>
+                                    <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)file.Size / 1024))</li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                }
+            }
         </span>
+
         <span>
-            <button>Upload</button>
+            <label for="items-per-page">Items per page:</label>
+            <select name="items-per-page" @bind="@itemsPerPage">
+                <option value="15">15</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </select>
+            <label for="current-page">Current page:</label>
+            <select name="current-page" @bind="@pageNumber">
+                @{
+                    int totalPages = (int)Math.Ceiling((decimal)databaseFiles.Count() / itemsPerPage);
+
+                    int page = 1;
+                    for (int i = 0; i < totalPages; i++)
+                    {
+                        int currentPage = page;
+                        <option value="@currentPage">@currentPage</option>
+
+                        page++;
+                    }
+                }
+            </select>
+
         </span>
     </div>
     <div>
         @{
-            foreach (FileObject file in files)
+            skippedItems = itemsPerPage * (pageNumber - 1);
+            foreach (FileObject file in databaseFiles.Skip(skippedItems).Take(itemsPerPage).ToList())
             {
-                string fileName = file.Name ?? string.Empty;
-                string source = _CDNURL + fileName;
-                <img src=@source alt=@fileName height="100">
+                if (file.Name != ".emptyFolderPlaceholder")
+                {
+                    string fileName = file.Name ?? string.Empty;
+                    string source = _CDNURL + fileName;
+                    <label for="gallery-image">@fileName</label>
+                    <img name="gallery-image" src=@source alt=@fileName height="100" style="margin:10px;">  
+                }
             }
         }
     </div>
@@ -31,24 +97,85 @@
 @code {
     private static readonly string _storageName = "question-image-bank";
     private static readonly string _CDNURL = "https://qhmtgkkbpwqfroujzubx.supabase.co/storage/v1/object/public/" + _storageName + "/";
-    string SearchQuery { get; set; } = string.Empty;
 
-    List<FileObject> files { get; set; } = new();
+    static List<FileObject> databaseFiles { get; set; } = new();
+
+    static int itemsPerPage { get; set; } = 15;
+    static int itemsPerPageNew { get; set; } = 15;
+    static int pageNumber { get; set; } = 1;
+    static int pageNumberNew { get; set; } = 1;
+    static int skippedItems { get; set; } = 0;
+
+    string searchQuery { get; set; } = string.Empty;
+
+    private List<IBrowserFile> loadedFiles = new();
+    static private long allowFileSizeKB = 1500;
+    private long maxFileSize = 1024 * allowFileSizeKB;
+    private int maxAllowedFiles = 0; // 0 means unlimited
+    private string isUploading { get; set; } = "Upload";
+    private bool isLoading;
+
 
     protected override async Task OnInitializedAsync()
     {
         await RetrieveAllFiles();
     }
 
-    void SearchFile()
+    private void LoadFiles(InputFileChangeEventArgs e)
     {
+        isLoading = true;
+        loadedFiles.Clear();
 
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles == 0 ? 10000000 : maxAllowedFiles))
+        {
+            try
+            {
+                loadedFiles.Add(file);
+            }
+            catch (Exception ex)
+            {
+                //Logger.LogError("File: {FileName} Error: {Error}",
+                //    file.Name, ex.Message);
+            }
+        }
+
+        isLoading = false;
     }
 
 
-    void UploadFile()
+    async Task SearchFile()
     {
+        databaseFiles = await supabase.Storage.From(_storageName).List() ?? new();
+    }
 
+
+    async Task UploadFile()
+    {
+        isUploading = "Uploading...";
+        foreach (IBrowserFile file in loadedFiles)
+        {
+            try
+            {
+                using var stream = file.OpenReadStream(maxAllowedSize: maxFileSize);
+                byte[] fileBytes = new byte[stream.Length];
+                await stream.ReadAsync(fileBytes.AsMemory(0, (int)stream.Length));
+                await supabase.Storage.From(_storageName).Upload(fileBytes, file.Name, new FileOptions { CacheControl = "3600", Upsert = false });
+            }
+            catch
+            {
+                Console.WriteLine("There seems to be a problem uploading file " + file.Name);
+                continue;
+            }
+        }
+        loadedFiles.Clear();
+        isUploading = "Upload";
+        await RetrieveAllFiles();
+    }
+
+
+    void CancelUpload()
+    {
+        loadedFiles.Clear();
     }
 
     void DeleteFile()
@@ -63,8 +190,6 @@
 
     async Task RetrieveAllFiles()
     {
-        files = await supabase.Storage.From(_storageName).List() ?? new();
+        databaseFiles = await supabase.Storage.From(_storageName).List() ?? new();
     }
-
-
 }

@@ -6,7 +6,9 @@
     <label style="font-size:16px; text-align:center;">@LevelTitle</label>
 </div>
 <div style="display:flex; justify-content:center; padding:25px;">
-    <div id="QuestionImageLayout" style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center;"></div>
+    <div id="QuestionImageLayout" style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center;">
+        <img src=@CurrentQuestion.ImageSource />
+    </div>
 </div>
 <label style="font-size:16px; text-align:center;">Please select the best choice.</label>
 <div style="display:flex; justify-content:center;">
@@ -20,7 +22,6 @@
 <div style="display:flex; justify-content:center;">
     <button class="btn btn-primary" id="ResetBtn" @onclick="ResetLevel" style="margin-top:50px;">Reset Level</button>
 </div>
-<div>@AnsweringDisabled</div>
 
 
 

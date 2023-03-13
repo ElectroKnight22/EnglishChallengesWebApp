@@ -1,6 +1,8 @@
 ﻿@using EnglishChallengesWebApp.Resources.Model
+@using Newtonsoft.Json
+@using Supabase.Storage
 
-@inject Client supabase
+@inject Supabase.Client supabase
 @inject SweetAlertService Swal
 
 @page "/Editing/{LevelNumber:int}/{LevelType}/{QuestionSetId:int}"
@@ -34,18 +36,62 @@
     @if (isEditing)
     {
         <div>
-            <span>
-                <label>Correct Answer</label>
-                <input @bind="@CorrectAnswer" @oninput="@((e) => { CorrectAnswer=(string)e.Value;})" class="swal2-input">
-            </span>
-            <span>
-                <label>Wrong Answer 1</label>
-                <input @bind="@WrongAnswer1" @oninput="@((e) => { WrongAnswer1=(string)e.Value;})" class="swal2-input">
-            </span>
-            <span>
-                <label>Wrong Answer 2</label>
-                <input @bind="@WrongAnswer2" @oninput="@((e) => { WrongAnswer2=(string)e.Value;})" class="swal2-input">
-            </span>
+            <p>
+                <label>Correct Answer:</label>
+                <input @bind="@CorrectAnswer" @oninput="@((e) => { CorrectAnswer=(string)e.Value;})">
+            </p>
+            <p>
+                <label>Wrong Answer 1:</label>
+                <input @bind="@WrongAnswer1" @oninput="@((e) => { WrongAnswer1=(string)e.Value;})">
+            </p>
+            <p>
+                <label>Wrong Answer 2:</label>
+                <input @bind="@WrongAnswer2" @oninput="@((e) => { WrongAnswer2=(string)e.Value;})">
+            </p>
+            <p>
+                @if (loadedFile == null)
+                {
+                    <label>Image link OR name in gallery:</label>
+                    <input @bind="@ImageSource" @oninput="@((e) => { ImageSource=(string)e.Value;})">
+                    <label> or </label>
+                }
+
+                @*Image uploader*@
+                <span>
+                    @if (string.IsNullOrEmpty(ImageSource))
+                    {
+                        <p>
+                            <label>
+                                Upload an image up to @(allowFileSizeKB) KB:
+                                <InputFile OnChange="@LoadFile" accept="image/*" multiple />
+                            </label>
+                            @if (loadedFile != null)
+                            {
+                                <button @onclick="CancelUpload">@isUploading</button>
+                            }
+                        </p>
+
+                        if (isLoading)
+                        {
+                            <p>Uploading...</p>
+                        }
+                        else
+                        {
+                            <ul>
+                                @if (loadedFile != null)
+                                {
+                                    string textColorString = "color:#000000";
+                                    if (loadedFile.Size > maxFileSize) { textColorString = "color:#FF0000"; }
+                                    <ul>
+                                        <li>Name: @loadedFile.Name</li>
+                                        <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)loadedFile.Size / 1024))</li>
+                                    </ul>
+                                }
+                            </ul>
+                        }
+                    }
+                </span>
+            </p>
 
         </div>
     }
@@ -55,14 +101,19 @@
             foreach (Question question in Questionlist)
             {
                 int i = index;
-                if (isEditing)
-                {
-                    <button class="btn btn-danger" @onclick="() => RemoveQuestion(i)">Delete</button>
-                }
-                <label>@question.CorrectAnswer</label>
-                <label>@question.WrongAnswer1</label>
-                <label>@question.WrongAnswer2</label>
-
+                <p>
+                    @if (isEditing)
+                    {
+                        <button class="btn btn-danger" @onclick="() => RemoveQuestion(i)">Delete</button>
+                    }
+                    <label>@question.CorrectAnswer</label>
+                    <label>@question.WrongAnswer1</label>
+                    <label>@question.WrongAnswer2</label>
+                    @if (!string.IsNullOrEmpty(question.ImageSource))
+                    {
+                        <img src=@question.ImageSource alt=@question.ImageSource height="50" style="margin:10px;">
+                    }
+                </p>
                 index++;
             }
         }
@@ -81,19 +132,73 @@
     public List<Question> Questionlist { get; set; } = new();
     public HashSet<Question> QuestionHashSet { get; set; }
 
+    private static readonly string _storageName = "question-image-bank";
+    private static readonly string _CDNURL = "https://qhmtgkkbpwqfroujzubx.supabase.co/storage/v1/object/public/" + _storageName + "/";
+
+    static List<FileObject> databaseFiles { get; set; } = new();
+
     private bool isEditing { get; set; } = false;
+
+    IBrowserFile loadedFile { get; set; }
+    private bool isLoading { get; set; } = false;
+    static private long allowFileSizeKB = 1500;
+    private long maxFileSize = 1024 * allowFileSizeKB;
+    private string isUploading { get; set; } = "Cancel";
 
     string CorrectAnswer { get; set; }
     string WrongAnswer1 { get; set; }
     string WrongAnswer2 { get; set; }
+    string ImageSource { get; set; }
 
 
     protected override async Task OnInitializedAsync()
     {
         QuestionHashSet = new();
+        await RetrieveAllFiles();
         await LoadQuestionSet();
     }
 
+    private void LoadFile(InputFileChangeEventArgs e)
+    {
+        isLoading = true;
+
+        try
+        {
+            loadedFile = e.File;
+        }
+        catch (Exception ex)
+        {
+            //Logger.LogError("File: {FileName} Error: {Error}",
+            //    file.Name, ex.Message);
+        }
+
+        isLoading = false;
+    }
+
+    async Task UploadFile()
+    {
+        isUploading = "Uploading...";
+        try
+        {
+            using var stream = loadedFile.OpenReadStream(maxAllowedSize: maxFileSize);
+            byte[] fileBytes = new byte[stream.Length];
+            await stream.ReadAsync(fileBytes.AsMemory(0, (int)stream.Length));
+            await supabase.Storage.From(_storageName).Upload(fileBytes, loadedFile.Name, new FileOptions { CacheControl = "3600", Upsert = false });
+        }
+        catch
+        {
+            Console.WriteLine("There seems to be a problem uploading file " + loadedFile.Name);
+        }
+        loadedFile = null;
+        isUploading = "Cancel";
+        await RetrieveAllFiles();
+    }
+
+
+    void CancelUpload()
+    {
+        loadedFile = null;
+    }
 
     private async Task LoadQuestionSet()
     {
@@ -105,6 +210,8 @@
         }
     }
 
+
+
     private void ToggleEdit()
     {
         isEditing = !isEditing;
@@ -114,14 +221,33 @@
     {
         if (!string.IsNullOrEmpty(CorrectAnswer))
         {
+
+
             Question question = new();
             question.CorrectAnswer = CorrectAnswer;
             question.WrongAnswer1 = WrongAnswer1;
             question.WrongAnswer2 = WrongAnswer2;
+            if (Uri.TryCreate(ImageSource, UriKind.Absolute, out Uri uriResult)
+            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+            {
+                question.ImageSource = ImageSource;
+            }
+            else if (!string.IsNullOrEmpty(ImageSource))
+            {
+                question.ImageSource = _CDNURL + ImageSource;
+            }
+            else if (loadedFile != null)
+            {
+                question.ImageSource = _CDNURL + loadedFile.Name;
+                await UploadFile();
+            }
+
             QuestionHashSet.Add(question);
 
             await UpdateQuestionSet();
             await LoadQuestionSet();
+
+            ClearInputs();
         }
         else
         {
@@ -148,5 +274,19 @@
       .Where(x => x.Id == QuestionSetId)
       .Set(x => x.Questions, QuestionHashSet)
       .Update();
+    }
+
+    async Task RetrieveAllFiles()
+    {
+        databaseFiles = await supabase.Storage.From(_storageName).List() ?? new();
+    }
+
+    void ClearInputs()
+    {
+        CorrectAnswer = string.Empty;
+        WrongAnswer1 = string.Empty;
+        WrongAnswer2 = string.Empty;
+        ImageSource = string.Empty;
+        loadedFile = null;
     }
 }
