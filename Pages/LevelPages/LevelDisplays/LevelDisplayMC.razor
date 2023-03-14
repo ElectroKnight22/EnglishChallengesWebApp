@@ -5,13 +5,11 @@
 <div>
     <label style="font-size:16px; text-align:center;">@LevelTitle</label>
 </div>
-<div style="display:flex; justify-content:center; padding:25px;">
-    <div id="QuestionImageLayout" style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center;">
-        <img src=@CurrentQuestion.ImageSource style="width:40%; height:auto;" />
-    </div>
+<div id="QuestionImageLayout" style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; padding:25px; width:auto; height:50vh;">
+    <img src=@CurrentQuestion.ImageSource style="max-width:100%; max-height:100%;" />
 </div>
 <div style="display:flex; justify-content:center; padding:10px;">
-<label style="font-size:16px; text-align:center;">@Prompt</label>
+    <label style="font-size:16px; text-align:center;">@Prompt</label>
 </div>
 <div style="display:flex; justify-content:center;">
     <button disabled=@IsAnsweringDisabled @onclick="() => ChooseAnswer(0)" style="margin:10px;">@AnswerTexts[0]</button>
@@ -22,7 +20,7 @@
     <button class="btn btn-primary" id="HintBtn" @onclick="GiveHint" style="margin:10px;">HINT</button>
 </div>
 <div style="display:flex; justify-content:center;">
-    <button class="btn btn-primary" id="ResetBtn" @onclick="ResetLevel" style="margin:10px;">Reset Level</button>
+    <button class="btn btn-primary" id="ResetBtn" @onclick="PromptReplay" style="margin:10px;">Reset Level</button>
 </div>
 
 

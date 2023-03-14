@@ -146,11 +146,11 @@ namespace EnglishChallengesWebApp.Resources.Model
         {
             SweetAlertResult replayLevel = await Swal.FireAsync(new SweetAlertOptions
             {
-                Title = "No more questions!",
-                Text = "Resetting the level.",
+                Title = "Reset the Level?",
+                Text = "A new attempt at these questions.",
                 Icon = SweetAlertIcon.Warning,
                 ShowCancelButton = true,
-                ConfirmButtonText = "OK",
+                ConfirmButtonText = "Do it",
                 CancelButtonText = "Cancel",
             });
 
@@ -158,18 +158,10 @@ namespace EnglishChallengesWebApp.Resources.Model
             {
                 await Swal.FireAsync(
                   "Level Reset",
-                  "Another attempt at the questions!",
+                  "Better luck this time!",
                   SweetAlertIcon.Success
                   );
                 await ResetLevel();
-            }
-            else if (replayLevel.Dismiss == DismissReason.Cancel)
-            {
-                await Swal.FireAsync(
-                  "Cancelled",
-                  "You chose to not start over.",
-                  SweetAlertIcon.Error
-                  );
             }
             //else await Application.Current.MainPage.Navigation.PopAsync();
 
