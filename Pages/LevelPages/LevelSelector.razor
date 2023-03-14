@@ -80,14 +80,14 @@
 
         if (!string.IsNullOrEmpty(result.Value))
         {
-            DateTime now = DateTime.Now;
-            string nowTimestamp = now.ToString("yyyy/MM/dd hh:mm tt");
+            //DateTime now = DateTime.Now;
+            //string nowTimestamp = now.ToString("yyyy/MM/dd hh:mm tt");
             var questionSet = new QuestionSet
                 {
                     Name = result.Value,
                     LevelNumber = this.LevelNumber,
                     LevelType = this.LevelType,
-                    LastModifiedDate = nowTimestamp,
+                    //LastModifiedDate = null,
                 };
             await supabase.From<QuestionSet>().Insert(questionSet);
             await LoadQuestionSets();
