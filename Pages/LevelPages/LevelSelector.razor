@@ -10,17 +10,20 @@
 
 <body>
     @{
-        <AuthorizeView>
-            <Authorized>
-                <button class="btn btn-primary" @onclick="ToggleEdit" style="margin:10px;">@(isEditing ? "Editing" : "Playing")</button>
-                <button class="btn btn-primary" @onclick="AddQuestionSet" style="margin:10px;">Add</button>
-            </Authorized>
-        </AuthorizeView>
+            //<AuthorizeView>
+        //    <Authorized>
+        //        <button class="btn btn-primary" @onclick="ToggleEdit" style="margin:10px;">@(isEditing ? "Editing" : "Playing")</button>
+        //        if (isEditing)
+        //        {
+        //        <button class="btn btn-primary" @onclick="AddQuestionSet" style="margin:10px;">Add</button>
+        //        }
+        //    </Authorized>
+        //</AuthorizeView>
 
-        <button class="btn btn-primary" @onclick="ToggleEdit" style="margin:10px;">@(isEditing ? "Editing" : "Playing")</button>
+        <button class="btn btn-primary" @onclick="ToggleEdit" style="margin:10px;">@(isEditing ? "Editing" : "Playing") <span class=@(isEditing ? "oi oi-pencil" : "oi oi-play-circle")></span></button>
         if (isEditing)
         {
-            <button class="btn btn-primary" @onclick="AddQuestionSet" style="margin:10px;">Add</button>
+            <button class="btn btn-primary" @onclick="AddQuestionSet" style="margin:10px;">New <span class="oi oi-plus"></span></button>
         }
 
         foreach (QuestionSet questionSet in QuestionSets)
@@ -92,7 +95,28 @@
     }
     async Task RemoveQuestionSet(QuestionSet questionSet)
     {
-        await supabase.From<QuestionSet>().Where(x => x.Id == questionSet.Id).Delete();
-        await LoadQuestionSets();
+        SweetAlertResult result = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Are you sure?",
+                Text = "You won't be able to revert this!",
+                Icon = "warning",
+                ShowCancelButton = true,
+                ConfirmButtonColor = "#3085d6",
+                CancelButtonColor = "#d33",
+                ConfirmButtonText = "Yes, delete it!"
+            });
+
+        if (!string.IsNullOrEmpty(result.Value))
+        {
+            await supabase.From<QuestionSet>().Where(x => x.Id == questionSet.Id).Delete();
+            await LoadQuestionSets();
+
+            SweetAlertResult newResult = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Deleted!",
+                    Text = "Question set has been deleted.",
+                    Icon = "success",
+                });
+        }
     }
 }
