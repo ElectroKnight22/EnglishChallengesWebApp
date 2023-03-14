@@ -14,9 +14,8 @@
     </div>
 </div>
 
-@if (navMenuCollapsed)
-{
-    <div class="@NavMenuCssClass">
+
+<div class="@NavMenuCssClass">
         <ul class="nav flex-column">
             @{
                 <li class="nav-item">
@@ -132,7 +131,7 @@
 
         </ul>
     </div>
-}
+
 
 @code {
     public enum NavSubmenu
@@ -183,8 +182,8 @@
 
     private HashSet<NavSubmenu> OpenedSubmenus = new();
     private HashSet<OpenedLevel> OpenedLevels = new();
-    private string NavMenuCssClass => navMenuCollapsed ? "collapse" : null;
-    private bool navMenuCollapsed = true;
+    private string NavMenuCssClass => isNavMenuCollapsed ? "collapse" : null;
+    private bool isNavMenuCollapsed = true;
     private int totalLevels { get; set; } = 4;
 
     private async Task BeginSignOut(MouseEventArgs args)
@@ -195,7 +194,7 @@
 
     private void ToggleNavMenu()
     {
-        navMenuCollapsed = !navMenuCollapsed;
+        isNavMenuCollapsed = !isNavMenuCollapsed;
     }
 
     private void ToggleSubmenu(NavSubmenu submenu)
@@ -230,7 +229,7 @@
         string levelNum = level.navLevel.ToString();
         string levelType = type.ToString();
 
-        navMenuCollapsed = false;
+        isNavMenuCollapsed = true;
 
         NavMan.NavigateTo($"Selecting/{levelNum}/{levelType}");
     }
