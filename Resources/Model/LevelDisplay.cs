@@ -182,7 +182,7 @@ namespace EnglishChallengesWebApp.Resources.Model
             {
                 Text = choice,
                 Lang = "en-US",
-                Voice = Voices.FirstOrDefault(v => v.Name.Contains("Jenny") || v.Name.Contains("Samantha") || v.Name.Contains("Neural2-F"))
+                Voice = Voices.FirstOrDefault(v => v.Name.Contains("Jenny") || v.Name.Contains("Samantha"))
 
         };
         await Speaker.SpeakAsync(utterancet); // 👈 Speak with "Jenny"'s voice!
