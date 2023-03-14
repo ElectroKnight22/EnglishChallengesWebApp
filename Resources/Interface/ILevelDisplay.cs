@@ -20,5 +20,6 @@ namespace EnglishChallengesWebApp.Resources.Interface
         Task ChooseAnswer(int buttonNumber);
         void GiveHint();
         Task ResetLevel();
+        Task SpeakString(string choice);
     }
 }

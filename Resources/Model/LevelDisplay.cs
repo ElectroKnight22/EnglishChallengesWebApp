@@ -19,6 +19,7 @@ namespace EnglishChallengesWebApp.Resources.Model
         public List<string> AnswerTexts { get; set; } = new();
         public string Prompt { get; set; } = string.Empty;
 
+        IEnumerable<SpeechSynthesisVoice> Voices;
 
         protected override async Task OnInitializedAsync()
         {
@@ -28,8 +29,17 @@ namespace EnglishChallengesWebApp.Resources.Model
             }
             await LoadQuestionSet();
             await Update(true);
-
         }
+
+        protected async override Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                Voices = await Speaker.GetVoicesAsync();
+                StateHasChanged();
+            }
+        }
+
         public async Task Update(bool shouldUpdate)
         {
             UpdateLevelTitle();
@@ -111,7 +121,7 @@ namespace EnglishChallengesWebApp.Resources.Model
                 IsAnsweringDisabled = true;
                 choice = AnswerTexts[buttonNumber];
                 isCorrect = choice == CurrentQuestion.CorrectAnswer;
-                await Speaker.SpeakAsync(choice);
+                await SpeakString(choice);
                 await Update(isCorrect);
                 IsAnsweringDisabled = false;
             }
@@ -121,7 +131,7 @@ namespace EnglishChallengesWebApp.Resources.Model
         {
             if (CurrentQuestion != null)
             {
-                await Speaker.SpeakAsync(CurrentQuestion.CorrectAnswer);
+                await SpeakString(CurrentQuestion.CorrectAnswer);
             }
         }
         public async Task ResetLevel()
@@ -164,6 +174,17 @@ namespace EnglishChallengesWebApp.Resources.Model
             //else await Application.Current.MainPage.Navigation.PopAsync();
 
             //todo
+        }
+
+        public async Task SpeakString(string choice)
+        {
+            var utterancet = new SpeechSynthesisUtterance()
+            {
+                Text = choice,
+                Lang = "en-US",
+                Voice = Voices.FirstOrDefault(v => v.Name.Contains("Jenny")),
+            };
+        await Speaker.SpeakAsync(utterancet); // 👈 Speak with "Jenny"'s voice!
         }
     }
 }
