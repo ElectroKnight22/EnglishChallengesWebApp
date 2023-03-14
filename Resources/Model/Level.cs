@@ -7,7 +7,7 @@ namespace EnglishChallengesWebApp.Resources.Model
     public class Level: SupabaseClient, ILevel
     {
         [Inject]
-        protected SweetAlertService? Swal { get; set; }
+        protected SweetAlertService Swal { get; set; }
 
         [Parameter]
         public int LevelNumber { get; set; }
