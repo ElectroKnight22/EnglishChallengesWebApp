@@ -10,7 +10,6 @@ namespace EnglishChallengesWebApp.Resources.Interface
         int Attempts { get; set; }
         Question CurrentQuestion { get; set; }
         List<string> AnswerTexts { get; set; }
-        string Prompt { get; set; }
 
         Task Update(bool shouldUpdate);
         void UpdateScore(bool isCorrect);
@@ -18,7 +17,9 @@ namespace EnglishChallengesWebApp.Resources.Interface
         void UpdateLevelTitle();
         void LoadNextQuestion();
         Task ChooseAnswer(int buttonNumber);
+        bool CheckAnswer(int buttonNumber);
         void GiveHint();
         Task ResetLevel();
+        Task SpeakAnswer();
     }
 }

@@ -10,98 +10,99 @@
 
 <h3>ImageGallery</h3>
 
-<div>
-    @*        <span>
-    <input @bind="@searchQuery" @oninput="@((e) => { searchQuery=(string)e.Value;})">
-    <button class="btn btn-primary" @onclick="SearchFile">Search</button>
-    </span>*@
-    @*Real search is not yet supported by the c# implementation of Supabase.*@
+<body>
+    <div>
+        @*        <span>
+        <input @bind="@searchQuery" @oninput="@((e) => { searchQuery=(string)e.Value;})">
+        <button class="btn btn-primary" @onclick="SearchFile">Search</button>
+        </span>*@
+        @*Real search is not yet supported by the c# implementation of Supabase.*@
+        <span>
+            @{
+                <p>
+                    <label>
+                        Upload @(maxAllowedFiles == 0 ? "" : $"up to {maxAllowedFiles} ")images up to @(allowFileSizeKB) KB each:
+                        <InputFile OnChange="@LoadFilesMulti" accept="image/*" multiple />
+                    </label>
+                    @if (LoadedFiles.Any())
+                    {
+                        <button @onclick="UploadFileMulti">@(IsUploading ? "Uploading..." : "Upload")</button>
+                        <button @onclick="CancelUpload">@(IsUploading ? "Uploading..." : "Cancel")</button>
+                    }
+                </p>
+
+                if (IsLoading)
+                {
+                    <p>Uploading...</p>
+                }
+                else
+                {
+                    <ul>
+                        @foreach (var file in LoadedFiles)
+                        {
+                            string textColorString = "color:#000000";
+                            if (file.Size > maxFileSize) { textColorString = "color:#FF0000"; }
+                            <li>
+                                <ul>
+                                    <li>Name: @file.Name</li>
+                                    <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)file.Size / 1024))</li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                }
+            }
+        </span>
+
+        <span>
+            <label for="items-per-page">Items per page:</label>
+            <select name="items-per-page" @bind="@itemsPerPage">
+                <option value="15">15</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </select>
+            <label for="current-page">Current page:</label>
+            <select name="current-page" @bind="@pageNumber">
+                @{
+                    int totalPages = (int)Math.Ceiling((decimal)DatabaseFiles.Count() / itemsPerPage);
+
+                    int page = 1;
+                    for (int i = 0; i < totalPages; i++)
+                    {
+                        int currentPage = page;
+                        <option value="@currentPage">@currentPage</option>
+
+                        page++;
+                    }
+                }
+            </select>
+
+        </span>
+        <span>
+            <button @onclick="ToggleDelete">@(isDeleting ? "Deleting": "Delete")</button>
+        </span>
+    </div>
     <div>
         @{
-            <p>
-                <label>
-                    Upload @(maxAllowedFiles == 0 ? "" : $"up to {maxAllowedFiles} ")images up to @(allowFileSizeKB) KB each:
-                    <InputFile OnChange="@LoadFilesMulti" accept="image/*" multiple />
-                </label>
-                @if (LoadedFiles.Any())
+            skippedItems = itemsPerPage * (pageNumber - 1);
+            foreach (FileObject file in DatabaseFiles.Skip(skippedItems).Take(itemsPerPage).ToList())
+            {
+                if (file.Name != ".emptyFolderPlaceholder")
                 {
-                    <button @onclick="UploadFileMulti">@(IsUploading ? "Uploading..." : "Upload")</button>
-                    <button @onclick="CancelUpload">@(IsUploading ? "Uploading..." : "Cancel")</button>
-                }
-            </p>
-
-            if (IsLoading)
-            {
-                <p>Uploading...</p>
-            }
-            else
-            {
-                <ul>
-                    @foreach (var file in LoadedFiles)
+                    string fileName = file.Name ?? string.Empty;
+                    string source = _CDNURL + fileName;
+                    if (isDeleting)
                     {
-                        string textColorString = "color:#000000";
-                        if (file.Size > maxFileSize) { textColorString = "color:#FF0000"; }
-                        <li>
-                            <ul>
-                                <li>Name: @file.Name</li>
-                                <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)file.Size / 1024))</li>
-                            </ul>
-                        </li>
-                    }
-                </ul>
-            }
-        }
-    </div>
-
-    <span>
-        <label for="items-per-page">Items per page:</label>
-        <select name="items-per-page" @bind="@itemsPerPage">
-            <option value="15">15</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-        </select>
-        <label for="current-page">Current page:</label>
-        <select name="current-page" @bind="@pageNumber">
-            @{
-                int totalPages = (int)Math.Ceiling((decimal)DatabaseFiles.Count() / itemsPerPage);
-
-                int page = 1;
-                for (int i = 0; i < totalPages; i++)
-                {
-                    int currentPage = page;
-                    <option value="@currentPage">@currentPage</option>
-
-                    page++;
-                }
-            }
-        </select>
-
-    </span>
-    <span>
-        <button @onclick="ToggleDelete">@(isDeleting ? "Deleting" : "Delete")</button>
-    </span>
-</div>
-<div>
-    @{
-        skippedItems = itemsPerPage * (pageNumber - 1);
-        foreach (FileObject file in DatabaseFiles.Skip(skippedItems).Take(itemsPerPage).ToList())
-        {
-            if (file.Name != ".emptyFolderPlaceholder")
-            {
-                string fileName = file.Name ?? string.Empty;
-                string source = _CDNURL + fileName;
-                <p>
-                    @if (isDeleting)
-                    {
-                        <button class="btn btn-danger" style="margin:10px;" @onclick="() =>DeleteFile(fileName)">Delete</button>
+                        <button class="btn btn-danger" style="margin:10px;" @onclick="() =>DeleteFile(file.Name)">Delete</button>
                     }
                     <img name="gallery-image" src=@source alt=@fileName height="100" style="margin:10px;">
                     <label for="gallery-image">@fileName</label>
-                </p>
+
+                }
             }
         }
-    }
-</div>
+    </div>
+</body>
 
 @code {
     static int itemsPerPage { get; set; } = 15;

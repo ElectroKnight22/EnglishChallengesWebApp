@@ -103,27 +103,26 @@
                         </NavLink>
                     </li>
 
-                    // Levels not yet made
-                    //<li class="nav-item px-4">
-                    //    <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.yesno)">
-                    //        <span class="oi oi-task" aria-hidden="true"></span> Yes/No
-                    //    </NavLink>
-                    //</li>
+                    <li class="nav-item px-4">
+                        <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.yesno)">
+                            <span class="oi oi-task" aria-hidden="true"></span> Yes/No
+                        </NavLink>
+                    </li>
 
-                    //<li class="nav-item px-4">
-                    //    <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.plural)">
-                    //        <span class="oi oi-task" aria-hidden="true"></span> Plurality
-                    //    </NavLink>
-                    //</li>
+                    <li class="nav-item px-4">
+                        <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.plural)">
+                            <span class="oi oi-task" aria-hidden="true"></span> Plurality
+                        </NavLink>
+                    </li>
 
-                    //if (level.navLevel == 2)
-                    //{
-                    //    <li class="nav-item px-4">
-                    //        <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.where)">
-                    //            <span class="oi oi-task" aria-hidden="true"></span> Where?
-                    //        </NavLink>
-                    //    </li>
-                    //}
+                    if (level.navLevel == 2)
+                    {
+                        <li class="nav-item px-4">
+                            <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.where)">
+                                <span class="oi oi-task" aria-hidden="true"></span> Where?
+                            </NavLink>
+                        </li>
+                    }
                 }
             }
         }
@@ -161,7 +160,7 @@
             this.navLevel = level;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals( object obj)
         {
             if (obj == null || GetType() != obj.GetType())
             {
