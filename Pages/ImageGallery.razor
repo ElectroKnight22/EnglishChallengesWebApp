@@ -77,9 +77,14 @@
         </select>
 
     </span>
-    <span>
-        <button @onclick="ToggleDelete">@(isDeleting ? "Deleting" : "Delete")</button>
-    </span>
+    <p>
+        <span>
+            <input @bind="@SearchQuery" placeholder="search" />
+            <button @onclick="() =>SearchFile(SearchQuery)">Search</button>
+            <button @onclick="ToggleDelete">@(isDeleting ? "Deleting" : "Delete")</button>
+        </span>
+    </p>
+
 </div>
 <div>
     @{

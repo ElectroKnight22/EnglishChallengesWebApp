@@ -11,7 +11,6 @@ namespace EnglishChallengesWebApp.Resources.Model
         [Column("name")] public string Name { get; set; } = string.Empty;
         [Column("level_type")] public string LevelType { get; set; } = string.Empty;
         [Column("level_number")] public int LevelNumber { get; set; } = 0;
-        [Column("last_modified")] public string? LastModifiedDate { get; set; }
         [Column("is_published")] public bool IsPublished { get; set; } = false;
 
         [Column("questions_json")] public HashSet<Question>? Questions { get; set; }

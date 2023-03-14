@@ -130,10 +130,10 @@ namespace EnglishChallengesWebApp.Resources.Model
         {
 
         }
-        protected async Task SearchFile()
+        protected async Task SearchFile(string searchQuery)
         {
-            DatabaseFiles = await Supabase.Storage.From(_storageName).List() ?? new();
+            SearchOptions options = new() { Search = searchQuery };
+            DatabaseFiles = await Supabase.Storage.From(_storageName).List("",options) ?? new();
         }
-
     }
 }

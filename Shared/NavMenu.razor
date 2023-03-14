@@ -24,7 +24,7 @@
                     </NavLink>
                 </li>
                 <li class="nav-item">
-                    <NavLink class="nav-link" href="User" Match="NavLinkMatch.All">
+                <NavLink class="nav-link" href="User" Match="NavLinkMatch.All" @onclick="() => ToggleNavMenu()">
                         <span class="oi oi-person" aria-hidden="true"></span> Profile
                     </NavLink>
                 </li>
@@ -43,27 +43,27 @@
                 //ShowLevelSubmenu(NavSubmenu.editor);
 
                 <li class="nav-item">
-                    <NavLink class="nav-link" href="Gallery">
-                        <span class="oi oi-image" aria-hidden="true"></span> Gallery
+                <NavLink class="nav-link" href="Gallery" @onclick="() => ToggleNavMenu()">
+                    <span class="oi oi-image" aria-hidden="true" ></span> Gallery
                     </NavLink>
                 </li>
 
                 <li class="nav-item">
-                    <NavLink class="nav-link" href="Settings">
-                        <span class="oi oi-cog" aria-hidden="true"></span> Settings
+                <NavLink class="nav-link" href="Settings" @onclick="() => ToggleNavMenu()">
+                    <span class="oi oi-cog" aria-hidden="true"></span> Settings
                     </NavLink>
                 </li>
                 <li class="nav-item">
                     <AuthorizeView>
                         <Authorized>
-                            <NavLink class="nav-link" href="#">
+                        <NavLink class="nav-link" href="#" @onclick="() => ToggleNavMenu()">
                                 Hello, @context.User.Identity.Name!
                                 <span class="oi oi-account-logout" aria-hidden="true" @onclick="BeginSignOut">
                                 </span> Sign out
                             </NavLink>
                         </Authorized>
                         <NotAuthorized>
-                            <NavLink class="nav-link" href="authentication/login">
+                        <NavLink class="nav-link" href="authentication/login" @onclick="() => ToggleNavMenu()">
                                 <span class="oi oi-account-login" aria-hidden="true"></span>
                                 Sign in
                             </NavLink>
