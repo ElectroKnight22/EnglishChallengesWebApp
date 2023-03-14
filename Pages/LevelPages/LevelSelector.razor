@@ -12,15 +12,15 @@
     @{
         <AuthorizeView>
             <Authorized>
-                <button class="btn btn-primary" @onclick="ToggleEdit">@(isEditing ? "Editing" : "Playing")</button>
-                <button class="btn btn-primary" @onclick="AddQuestionSet">Add</button>
+                <button class="btn btn-primary" @onclick="ToggleEdit" style="margin:10px;">@(isEditing ? "Editing" : "Playing")</button>
+                <button class="btn btn-primary" @onclick="AddQuestionSet" style="margin:10px;">Add</button>
             </Authorized>
         </AuthorizeView>
 
-        <button class="btn btn-primary" @onclick="ToggleEdit">@(isEditing ? "Editing" : "Playing")</button>
+        <button class="btn btn-primary" @onclick="ToggleEdit" style="margin:10px;">@(isEditing ? "Editing" : "Playing")</button>
         if (isEditing)
         {
-            <button class="btn btn-primary" @onclick="AddQuestionSet">Add</button>
+            <button class="btn btn-primary" @onclick="AddQuestionSet" style="margin:10px;">Add</button>
         }
 
         foreach (QuestionSet questionSet in QuestionSets)
