@@ -228,8 +228,7 @@
         string levelNum = level.navLevel.ToString();
         string levelType = type.ToString();
 
-        OpenedSubmenus.Clear();
-        OpenedLevels.Clear();
+        collapseNavMenu = false;
 
         NavMan.NavigateTo($"Selecting/{levelNum}/{levelType}");
     }
