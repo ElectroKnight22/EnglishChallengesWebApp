@@ -8,7 +8,8 @@ namespace EnglishChallengesWebApp.Resources.Model
     public abstract class LevelDisplay : Level, ILevelDisplay
     {
         [Inject]
-        protected SpeechSynthesis Speaker { get; set; }
+        protected SpeechSynthesis? Speaker { get; set; }
+
         public string LevelTitle { get; set; } = string.Empty;
         public int QuestionNumber { get; set; }
         public int Score { get; set; }
@@ -17,7 +18,6 @@ namespace EnglishChallengesWebApp.Resources.Model
 
         public Question CurrentQuestion { get; set; } = new();
         public List<string> AnswerTexts { get; set; } = new();
-        public string Prompt { get; set; } = string.Empty;
 
 
         protected override async Task OnInitializedAsync()
@@ -33,7 +33,6 @@ namespace EnglishChallengesWebApp.Resources.Model
         public async Task Update(bool shouldUpdate)
         {
             UpdateLevelTitle();
-            UpdateScore(shouldUpdate);
             if (shouldUpdate)
             {
                 if (QuestionList.Count == 0)
@@ -47,9 +46,9 @@ namespace EnglishChallengesWebApp.Resources.Model
                 }
             }
         }
-        public void UpdateScore(bool shouldUpdate)
+        public void UpdateScore(bool isCorrect)
         {
-            if (shouldUpdate)
+            if (isCorrect)
             {
                 Score++;
                 QuestionNumber++;
@@ -83,13 +82,12 @@ namespace EnglishChallengesWebApp.Resources.Model
                         break;
                 }
             }
-            Prompt = CurrentQuestion.Prompt ?? "Please select the best answer";
         }
         public void UpdateLevelTitle()
         {
             try
             {
-                LevelTitle = $"== Level {LevelNumber} Question {QuestionNumber} == {QuestionList.Count} left. Attempts: {Attempts}. Score: {Score}.";
+                LevelTitle = $"Level {LevelNumber} Question {QuestionNumber} - {QuestionList.Count} left. Attempts: {Attempts}. Score: {Score}.";
             }
             catch { throw new Exception("LevelTitle label has not been created."); }
         }
@@ -104,33 +102,40 @@ namespace EnglishChallengesWebApp.Resources.Model
         }
         public virtual async Task ChooseAnswer(int buttonNumber)
         {
-            string choice;
-            bool isCorrect;
             if (CurrentQuestion != null)
             {
                 IsAnsweringDisabled = true;
-                choice = AnswerTexts[buttonNumber];
-                isCorrect = choice == CurrentQuestion.CorrectAnswer;
-                await Speaker.SpeakAsync(choice);
-                await Update(isCorrect);
+                bool isCorrect = CheckAnswer(buttonNumber);
+                bool shouldUpdate = isCorrect;
+                await Update(shouldUpdate);
                 IsAnsweringDisabled = false;
             }
         }
-
+        public virtual bool CheckAnswer(int buttonNumber)
+        {
+            bool isCorrect = AnswerTexts[buttonNumber] == CurrentQuestion.CorrectAnswer;
+            UpdateScore(isCorrect);
+            return isCorrect;
+        }
         public async void GiveHint()
         {
-            if (CurrentQuestion != null)
-            {
-                await Speaker.SpeakAsync(CurrentQuestion.CorrectAnswer);
-            }
+            await SpeakAnswer();
         }
         public async Task ResetLevel()
         {
-            QuestionNumber = 1;
+            QuestionNumber = 0;
             Score = 0;
             Attempts = 0;
             await LoadQuestionSet();
             await Update(true);
+        }
+        public async Task SpeakAnswer()
+        {
+            await Speaker.CancelAsync();
+            if (CurrentQuestion != null)
+            {
+                await Speaker.SpeakAsync(CurrentQuestion.CorrectAnswer);
+            }
         }
         public async Task PromptReplay()
         {
