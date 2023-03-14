@@ -18,8 +18,8 @@
 
     <AuthorizeView>
         <Authorized>
-            <button class="btn btn-primary" @onclick="ToggleDelete">Edit</button>
-            <button class="btn btn-primary" @onclick="AddQuestion">Add</button>
+            <button class="btn btn-primary" @onclick="ToggleDelete" style="margin:10px;">Edit</button>
+            <button class="btn btn-primary" @onclick="AddQuestion" style="margin:10px;">Add</button>
         </Authorized>
     </AuthorizeView>
 
@@ -38,6 +38,10 @@
             <input @bind="@WrongAnswer2" @oninput="@((e) => { WrongAnswer2=(string)e.Value;})">
         </p>
         <p>
+            <label>Question Prompt:</label>
+            <input @bind="@Prompt" @oninput="@((e) => { Prompt=(string)e.Value;})" placeholder="optional">
+        </p>
+        <p>
             @if (LoadedFile == null)
             {
                 <label>Image link OR name in gallery:</label>
@@ -46,7 +50,7 @@
             }
 
             @*Image uploader*@
-            <span>
+            <div>
                 @if (string.IsNullOrEmpty(ImageSource))
                 {
                     <p>
@@ -64,22 +68,17 @@
                     {
                         <p>Uploading...</p>
                     }
-                    else
+                    else if (LoadedFile != null)
                     {
+                        string textColorString = "color:#000000";
+                        if (LoadedFile.Size > maxFileSize) { textColorString = "color:#FF0000"; }
                         <ul>
-                            @if (LoadedFile != null)
-                            {
-                                string textColorString = "color:#000000";
-                                if (LoadedFile.Size > maxFileSize) { textColorString = "color:#FF0000"; }
-                                <ul>
-                                    <li>Name: @LoadedFile.Name</li>
-                                    <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)LoadedFile.Size / 1024))</li>
-                                </ul>
-                            }
+                            <li>Name: @LoadedFile.Name</li>
+                            <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)LoadedFile.Size / 1024))</li>
                         </ul>
                     }
                 }
-            </span>
+            </div>
         </p>
 
     </div>
@@ -101,9 +100,10 @@
                     <label>@question.CorrectAnswer</label>
                     <label>@question.WrongAnswer1</label>
                     <label>@question.WrongAnswer2</label>
+                    <label>@question.Prompt</label>
                     @if (!string.IsNullOrEmpty(question.ImageSource))
                     {
-                        <img src=@question.ImageSource alt=@question.ImageSource height="50" style="margin:10px;">
+                        <img src=@question.ImageSource alt="cannot find image" height="50" style="margin:10px;">
                     }
                 </p>
                 index++;
@@ -120,6 +120,7 @@
     string CorrectAnswer { get; set; } = string.Empty;
     string WrongAnswer1 { get; set; } = string.Empty;
     string WrongAnswer2 { get; set; } = string.Empty;
+    string Prompt { get; set; } = string.Empty;
     string ImageSource { get; set; } = string.Empty;
 
 
@@ -131,12 +132,16 @@
     }
     async Task AddQuestion()
     {
-        if (!string.IsNullOrEmpty(CorrectAnswer))
+        if (!string.IsNullOrEmpty(CorrectAnswer) && !string.IsNullOrEmpty(WrongAnswer1) && !string.IsNullOrEmpty(WrongAnswer2))
         {
             Question question = new();
             question.CorrectAnswer = CorrectAnswer;
             question.WrongAnswer1 = WrongAnswer1;
             question.WrongAnswer2 = WrongAnswer2;
+            if (!string.IsNullOrEmpty(Prompt))
+            {
+                question.Prompt = Prompt;
+            }
             if (Uri.TryCreate(ImageSource, UriKind.Absolute, out Uri uriResult)
             && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
             {
@@ -192,6 +197,7 @@
         CorrectAnswer = string.Empty;
         WrongAnswer1 = string.Empty;
         WrongAnswer2 = string.Empty;
+        Prompt = string.Empty;
         ImageSource = string.Empty;
         LoadedFile = null;
     }

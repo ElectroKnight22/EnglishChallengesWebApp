@@ -1,5 +1,6 @@
 ﻿using Postgrest.Attributes;
 using Postgrest.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EnglishChallengesWebApp.Resources.Model
 {
@@ -15,7 +16,7 @@ namespace EnglishChallengesWebApp.Resources.Model
 
         [Column("questions_json")] public HashSet<Question>? Questions { get; set; }
 
-        public override bool Equals(object obj)
+        public override bool Equals([AllowNull] object obj)
         {
             return obj is QuestionSet qSet &&
                    Id == qSet.Id &&
