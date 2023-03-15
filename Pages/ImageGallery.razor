@@ -52,8 +52,14 @@
             }
         }
     </div>
-
-    <span>
+    <p>
+        <span>
+            <input @bind="@SearchQuery" placeholder="search" />
+            <button @onclick="() =>SearchFile(SearchQuery)">Search</button>
+            <button @onclick="ToggleDelete">@(isDeleting ? "Deleting" : "Delete")</button>
+        </span>
+    </p>
+    <p>
         <label for="items-per-page">Items per page:</label>
         <select name="items-per-page" @bind="@itemsPerPage">
             <option value="15">15</option>
@@ -76,14 +82,8 @@
             }
         </select>
 
-    </span>
-    <p>
-        <span>
-            <input @bind="@SearchQuery" placeholder="search" />
-            <button @onclick="() =>SearchFile(SearchQuery)">Search</button>
-            <button @onclick="ToggleDelete">@(isDeleting ? "Deleting" : "Delete")</button>
-        </span>
     </p>
+
 
 </div>
 <div>
