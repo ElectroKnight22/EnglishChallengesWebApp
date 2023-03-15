@@ -14,8 +14,8 @@ namespace EnglishChallengesWebApp.Resources.Interface
 
         Task Update(bool shouldUpdate);
         void UpdateScore(bool isCorrect);
-        void UpdateShownQuestion();
         void UpdateLevelTitle();
+        void UpdateShownChoices();
         void LoadNextQuestion();
         Task ChooseAnswer(int buttonNumber);
         void GiveHint();

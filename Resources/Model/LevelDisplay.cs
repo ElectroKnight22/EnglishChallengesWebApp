@@ -9,6 +9,8 @@ namespace EnglishChallengesWebApp.Resources.Model
     {
         [Inject]
         protected SpeechSynthesis Speaker { get; set; }
+        [Inject]
+        protected NavigationManager NavMan { get; set; }
         public string LevelTitle { get; set; } = string.Empty;
         public int QuestionNumber { get; set; }
         public int Score { get; set; }
@@ -27,10 +29,8 @@ namespace EnglishChallengesWebApp.Resources.Model
             {
                 AnswerTexts.Add("loading...");
             }
-            await LoadQuestionSet();
-            await Update(true);
+            await ResetLevel();
         }
-
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -39,12 +39,11 @@ namespace EnglishChallengesWebApp.Resources.Model
                 StateHasChanged();
             }
         }
-
-        public async Task Update(bool shouldUpdate)
+        public async Task Update(bool shouldNext)
         {
             UpdateLevelTitle();
-            UpdateScore(shouldUpdate);
-            if (shouldUpdate)
+            StateHasChanged();
+            if (shouldNext)
             {
                 if (QuestionList.Count == 0)
                 {
@@ -53,22 +52,29 @@ namespace EnglishChallengesWebApp.Resources.Model
                 else
                 {
                     LoadNextQuestion();
-                    UpdateShownQuestion();
+                    UpdateShownChoices();
                 }
             }
+            UpdateLevelTitle();
         }
-        public void UpdateScore(bool shouldUpdate)
+        public void UpdateScore(bool shouldNext)
         {
-            if (shouldUpdate)
+            if (shouldNext)
             {
                 Score++;
                 QuestionNumber++;
             }
             Attempts++;
-            LevelTitle = $"Level {LevelNumber} Question {QuestionNumber} - {QuestionList.Count} left. Attempts: {Attempts}. Score: {Score}.";
         }
-
-        public void UpdateShownQuestion()
+        public void UpdateLevelTitle()
+        {
+            try
+            {
+                LevelTitle = $"== Level {LevelNumber} Question {QuestionNumber} == {QuestionList.Count} left. Attempts: {Attempts}. Score: {Score}.";
+            }
+            catch { throw new Exception("LevelTitle label has not been created."); }
+        }
+        public void UpdateShownChoices()
         {
             Random rnd = new();
             List<int> answerIndexes = new() { 0, 1, 2 };
@@ -95,14 +101,6 @@ namespace EnglishChallengesWebApp.Resources.Model
             }
             Prompt = CurrentQuestion.Prompt ?? "Please select the best answer";
         }
-        public void UpdateLevelTitle()
-        {
-            try
-            {
-                LevelTitle = $"== Level {LevelNumber} Question {QuestionNumber} == {QuestionList.Count} left. Attempts: {Attempts}. Score: {Score}.";
-            }
-            catch { throw new Exception("LevelTitle label has not been created."); }
-        }
         public void LoadNextQuestion()
         {
             Random rnd = new();
@@ -122,11 +120,11 @@ namespace EnglishChallengesWebApp.Resources.Model
                 choice = AnswerTexts[buttonNumber];
                 isCorrect = choice == CurrentQuestion.CorrectAnswer;
                 await SpeakString(choice);
+                UpdateScore(isCorrect);
                 await Update(isCorrect);
                 IsAnsweringDisabled = false;
             }
         }
-
         public async void GiveHint()
         {
             if (CurrentQuestion != null)
@@ -150,8 +148,8 @@ namespace EnglishChallengesWebApp.Resources.Model
                 Text = "A new attempt at these questions.",
                 Icon = SweetAlertIcon.Warning,
                 ShowCancelButton = true,
-                ConfirmButtonText = "Do it",
-                CancelButtonText = "Cancel",
+                ConfirmButtonText = "Reset",
+                CancelButtonText = "Leave",
             });
 
             if (!string.IsNullOrEmpty(replayLevel.Value))
@@ -162,12 +160,11 @@ namespace EnglishChallengesWebApp.Resources.Model
                   SweetAlertIcon.Success
                   );
                 await ResetLevel();
+            } else
+            {
+                NavMan.NavigateTo($"Selecting/{LevelNumber}/{LevelType}");
             }
-            //else await Application.Current.MainPage.Navigation.PopAsync();
-
-            //todo
         }
-
         public async Task SpeakString(string choice)
         {
             var utterancet = new SpeechSynthesisUtterance()
