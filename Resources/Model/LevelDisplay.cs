@@ -2,6 +2,7 @@
 using EnglishChallengesWebApp.Resources.Interface;
 using Microsoft.AspNetCore.Components;
 using CurrieTechnologies.Razor.SweetAlert2;
+using System.Runtime.CompilerServices;
 
 namespace EnglishChallengesWebApp.Resources.Model
 {
@@ -47,7 +48,7 @@ namespace EnglishChallengesWebApp.Resources.Model
             {
                 if (QuestionList.Count == 0)
                 {
-                    await PromptReplay();
+                    await PromptEnd();
                 }
                 else
                 {
@@ -146,7 +147,6 @@ namespace EnglishChallengesWebApp.Resources.Model
             {
                 Title = "Reset the Level?",
                 Text = "A new attempt at these questions.",
-                Icon = SweetAlertIcon.Warning,
                 ShowCancelButton = true,
                 ConfirmButtonText = "Reset",
                 CancelButtonText = "Leave",
@@ -155,15 +155,33 @@ namespace EnglishChallengesWebApp.Resources.Model
             if (!string.IsNullOrEmpty(replayLevel.Value))
             {
                 await Swal.FireAsync(
-                  "Level Reset",
+                  "Level Reset.",
                   "Better luck this time!",
-                  SweetAlertIcon.Success
+                  SweetAlertIcon.Info
                   );
                 await ResetLevel();
             } else
             {
                 NavMan.NavigateTo($"Selecting/{LevelNumber}/{LevelType}");
             }
+        }
+
+        protected async Task PromptEnd()
+        {
+            string levelResultString = "Your Score: " + Score.ToString() + " / " + Attempts.ToString();
+            SweetAlertIcon swalIcon = Score / Attempts >= 0.8 ? SweetAlertIcon.Success
+                                    : Score / Attempts >= 0.6 ? SweetAlertIcon.Warning
+                                    : SweetAlertIcon.Error;
+
+            await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Level Complete!",
+                Html = levelResultString,
+                Icon = swalIcon,
+                ConfirmButtonText = "Confirm",
+            });
+
+            await PromptReplay();
         }
         public async Task SpeakString(string choice)
         {
