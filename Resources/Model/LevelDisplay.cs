@@ -3,6 +3,7 @@ using EnglishChallengesWebApp.Resources.Interface;
 using Microsoft.AspNetCore.Components;
 using CurrieTechnologies.Razor.SweetAlert2;
 using System.Runtime.CompilerServices;
+using Newtonsoft.Json.Linq;
 
 namespace EnglishChallengesWebApp.Resources.Model
 {
@@ -169,9 +170,10 @@ namespace EnglishChallengesWebApp.Resources.Model
         protected async Task PromptEnd()
         {
             string levelResultString = "Your Score: " + Score.ToString() + " / " + Attempts.ToString();
-            SweetAlertIcon swalIcon = Score / Attempts >= 0.8 ? SweetAlertIcon.Success
-                                    : Score / Attempts >= 0.6 ? SweetAlertIcon.Warning
-                                    : SweetAlertIcon.Error;
+            int score = (int)Math.Ceiling((decimal)Score / Attempts * 100);
+            var swalIcon = score >= 80 ? SweetAlertIcon.Success
+                         : score >= 60 ? SweetAlertIcon.Warning
+                         : SweetAlertIcon.Error;
 
             await Swal.FireAsync(new SweetAlertOptions
             {
