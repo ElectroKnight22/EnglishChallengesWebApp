@@ -112,14 +112,12 @@ namespace EnglishChallengesWebApp.Resources.Model
             CurrentQuestion = QuestionList.First();
             QuestionList.Remove(CurrentQuestion);
         }
-        public virtual async Task ChooseAnswer(int buttonNumber)
+        public virtual async Task ChooseAnswer(string choice)
         {
-            string choice;
             bool isCorrect;
             if (CurrentQuestion != null)
             {
                 IsAnsweringDisabled = true;
-                choice = AnswerTexts[buttonNumber];
                 isCorrect = choice == CurrentQuestion.CorrectAnswer;
                 await SpeakString(choice);
                 UpdateScore(isCorrect);
@@ -161,7 +159,8 @@ namespace EnglishChallengesWebApp.Resources.Model
                   SweetAlertIcon.Info
                   );
                 await ResetLevel();
-            } else
+            }
+            else
             {
                 NavMan.NavigateTo($"Selecting/{LevelNumber}/{LevelType}");
             }
@@ -193,8 +192,8 @@ namespace EnglishChallengesWebApp.Resources.Model
                 Lang = "en-US",
                 Voice = Voices.FirstOrDefault(v => v.Name.Contains("Jenny") || v.Name.Contains("Samantha"))
 
-        };
-        await Speaker.SpeakAsync(utterancet); // 👈 Speak with "Jenny"'s voice!
+            };
+            await Speaker.SpeakAsync(utterancet); // 👈 Speak with "Jenny"'s voice!
         }
     }
 }

@@ -52,8 +52,8 @@
         {
             <label for="true-false-answer">Answer:</label>
             <select name="true-false-answer" @bind="@IsTrueString">
-                <option value="true">true</option>
-                <option value="false">false</option>
+                <option value="True">true</option>
+                <option value="False">false</option>
             </select>
         }
 
@@ -117,10 +117,6 @@
                     <label>@question.WrongAnswer1</label>
                     <label>@question.WrongAnswer2</label>
                     <label>@question.Prompt</label>
-                    @if (LevelType == "yesno")
-                    {
-                        <label>@question.IsTrue</label>
-                    }
                     @if (!string.IsNullOrEmpty(question.ImageSource))
                     {
                         <img src=@question.ImageSource alt="cannot find image" height="50" style="margin:10px;">
@@ -141,7 +137,7 @@
     string WrongAnswer1 { get; set; } = string.Empty;
     string WrongAnswer2 { get; set; } = string.Empty;
     string Prompt { get; set; } = string.Empty;
-    string IsTrueString { get; set; } = "true";
+    string IsTrueString { get; set; } = "True";
     string ImageSource { get; set; } = string.Empty;
 
 
@@ -224,7 +220,7 @@
     {
         if (!string.IsNullOrEmpty(IsTrueString) && !string.IsNullOrEmpty(Prompt))
         {
-            question.IsTrue = bool.Parse(IsTrueString);
+            question.CorrectAnswer = IsTrueString;
             return true;
         }
         return false;

@@ -17,7 +17,7 @@ namespace EnglishChallengesWebApp.Resources.Interface
         void UpdateLevelTitle();
         void UpdateShownChoices();
         void LoadNextQuestion();
-        Task ChooseAnswer(int buttonNumber);
+        Task ChooseAnswer(string choice);
         void GiveHint();
         Task ResetLevel();
         Task SpeakString(string choice);

@@ -12,9 +12,9 @@
     <label style="font-size:16px; text-align:center;">@Prompt</label>
 </div>
 <div style="display:flex; justify-content:center;">
-    <button disabled=@IsAnsweringDisabled @onclick="() => ChooseAnswer(0)" style="margin:10px;">@AnswerTexts[0]</button>
-    <button disabled=@IsAnsweringDisabled @onclick="() => ChooseAnswer(1)" style="margin:10px;">@AnswerTexts[1]</button>
-    <button disabled=@IsAnsweringDisabled @onclick="() => ChooseAnswer(2)" style="margin:10px;">@AnswerTexts[2]</button>
+    <button disabled=@IsAnsweringDisabled @onclick="() => ChooseAnswer(AnswerTexts[0])" style="margin:10px;">@AnswerTexts[0]</button>
+    <button disabled=@IsAnsweringDisabled @onclick="() => ChooseAnswer(AnswerTexts[1])" style="margin:10px;">@AnswerTexts[1]</button>
+    <button disabled=@IsAnsweringDisabled @onclick="() => ChooseAnswer(AnswerTexts[2])" style="margin:10px;">@AnswerTexts[2]</button>
 </div>
 <div style="display:flex; justify-content:center;">
     <button class="btn btn-primary" id="HintBtn" @onclick="GiveHint" style="margin:10px;">HINT</button>
