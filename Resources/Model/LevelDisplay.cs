@@ -137,8 +137,20 @@ namespace EnglishChallengesWebApp.Resources.Model
             QuestionNumber = 1;
             Score = 0;
             Attempts = 0;
-            await LoadQuestionSet();
-            await Update(true);
+            bool hasQuestions = await LoadQuestionSet();
+            if (!hasQuestions)
+            {
+                await Swal.FireAsync(
+                  "No questions found!",
+                  "Returning to level selection.",
+                  SweetAlertIcon.Error
+                  );
+
+                NavMan.NavigateTo($"Selecting/{LevelNumber}/{LevelType}");
+            } else
+            {
+                await Update(true);
+            }
         }
         public async Task PromptReplay()
         {

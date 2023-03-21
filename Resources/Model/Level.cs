@@ -18,14 +18,16 @@ namespace EnglishChallengesWebApp.Resources.Model
         public HashSet<Question> QuestionHashSet { get; set; } = new();
         public List<Question> QuestionList { get; set; } = new();
 
-        protected async Task LoadQuestionSet()
+        protected async Task<bool> LoadQuestionSet()
         {
             var result = await Supabase.From<QuestionSet>().Where(x => x.Id == QuestionSetId).Select(x => new object[] { x.Questions }).Single();
             if (result.Questions != null)
             {
                 QuestionHashSet = result.Questions;
                 QuestionList = QuestionHashSet.OrderBy(x => Guid.NewGuid()).ToList();
+                return true;
             }
+            return false;
         }
     }
 }
