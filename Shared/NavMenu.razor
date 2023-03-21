@@ -16,121 +16,122 @@
 
 
 <div class="@NavMenuCssClass">
-        <ul class="nav flex-column">
-            @{
-                <li class="nav-item">
-                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                        <span class="oi oi-home" aria-hidden="true"></span> Home
-                    </NavLink>
-                </li>
-                <li class="nav-item">
+    <ul class="nav flex-column">
+        @{
+            <li class="nav-item">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span> Home
+                </NavLink>
+            </li>
+            <li class="nav-item">
                 <NavLink class="nav-link" href="User" Match="NavLinkMatch.All" @onclick="() => ToggleNavMenu()">
-                        <span class="oi oi-person" aria-hidden="true"></span> Profile
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink class="nav-link" @onclick="() => ToggleSubmenu(NavSubmenu.levels)">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Levels
-                    </NavLink>
-                </li>
-                ShowLevelSubmenu(NavSubmenu.levels);
+                    <span class="oi oi-person" aria-hidden="true"></span> Profile
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" @onclick="() => ToggleSubmenu(NavSubmenu.levels)">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Levels
+                </NavLink>
+            </li>
+            ShowLevelSubmenu(NavSubmenu.levels);
 
-                //<li class="nav-item">
-                //    <NavLink class="nav-link" @onclick="() => ToggleSubmenu(NavSubmenu.editor)">
-                //        <span class="oi oi-pencil" aria-hidden="true"></span> Level Editor
-                //    </NavLink>
-                //</li>
-                //ShowLevelSubmenu(NavSubmenu.editor);
+            //<li class="nav-item">
+            // <NavLink class="nav-link" @onclick="() => ToggleSubmenu(NavSubmenu.editor)">
+            // <span class="oi oi-pencil" aria-hidden="true"></span> Level Editor
+            // </NavLink>
+            //</li>
+            //ShowLevelSubmenu(NavSubmenu.editor);
 
-                <li class="nav-item">
+            <li class="nav-item">
                 <NavLink class="nav-link" href="Gallery" @onclick="() => ToggleNavMenu()">
-                    <span class="oi oi-image" aria-hidden="true" ></span> Gallery
-                    </NavLink>
-                </li>
+                    <span class="oi oi-image" aria-hidden="true"></span> Gallery
+                </NavLink>
+            </li>
 
-                <li class="nav-item">
+            <li class="nav-item">
                 <NavLink class="nav-link" href="Settings" @onclick="() => ToggleNavMenu()">
                     <span class="oi oi-cog" aria-hidden="true"></span> Settings
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <AuthorizeView>
-                        <Authorized>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <AuthorizeView>
+                    <Authorized>
                         <NavLink class="nav-link" href="#" @onclick="() => ToggleNavMenu()">
-                                Hello, @context.User.Identity.Name!
-                                <span class="oi oi-account-logout" aria-hidden="true" @onclick="BeginSignOut">
-                                </span> Sign out
-                            </NavLink>
-                        </Authorized>
-                        <NotAuthorized>
+                            Hello, @context.User.Identity.Name!
+                            <span class="oi oi-account-logout" aria-hidden="true" @onclick="BeginSignOut">
+                            </span> Sign out
+                        </NavLink>
+                    </Authorized>
+                    <NotAuthorized>
                         <NavLink class="nav-link" href="authentication/login" @onclick="() => ToggleNavMenu()">
-                                <span class="oi oi-account-login" aria-hidden="true"></span>
-                                Sign in
-                            </NavLink>
-                        </NotAuthorized>
-                    </AuthorizeView>
-                </li>
+                            <span class="oi oi-account-login" aria-hidden="true"></span>
+                            Sign in
+                        </NavLink>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </li>
 
 
-                void ShowLevelSubmenu(NavSubmenu submenu)
+            void ShowLevelSubmenu(NavSubmenu submenu)
+            {
+                if (OpenedSubmenus.Contains(submenu))
                 {
-                    if (OpenedSubmenus.Contains(submenu))
+                    for (int i = 1; i <= totalLevels; i++)
                     {
-                        for (int i = 1; i <= totalLevels; i++)
-                        {
-                            int levelNum = i;
+                        int levelNum = i;
 
-                            OpenedLevel openedLevel = new(submenu, levelNum);
+                        OpenedLevel openedLevel = new(submenu, levelNum);
 
-                            <li class="nav-item px-2">
-                                <NavLink class="nav-link" @onclick="() => ToggleLevels(openedLevel)">
-                                    <span class="oi oi-list" aria-hidden="true"></span> Level @(levelNum)
-                                </NavLink>
-                            </li>
-
-                            ShowTypeSubmenu(openedLevel);
-                        }
-                    }
-                }
-
-                void ShowTypeSubmenu(OpenedLevel level)
-                {
-                    if (OpenedLevels.Contains(level))
-                    {
-
-                        <li class="nav-item px-4">
-                            <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.multiplechoice)">
-                                <span class="oi oi-task" aria-hidden="true"></span> Multiple Choice
+                        <li class="nav-item px-2">
+                            <NavLink class="nav-link" @onclick="() => ToggleLevels(openedLevel)">
+                                <span class="oi oi-list" aria-hidden="true"></span> Level @(levelNum)
                             </NavLink>
                         </li>
 
-                        // Levels not yet made
-                        //<li class="nav-item px-4">
-                        //    <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.yesno)">
-                        //        <span class="oi oi-task" aria-hidden="true"></span> Yes/No
-                        //    </NavLink>
-                        //</li>
-
-                        //<li class="nav-item px-4">
-                        //    <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.plural)">
-                        //        <span class="oi oi-task" aria-hidden="true"></span> Plurality
-                        //    </NavLink>
-                        //</li>
-
-                        //if (level.navLevel == 2)
-                        //{
-                        //    <li class="nav-item px-4">
-                        //        <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.where)">
-                        //            <span class="oi oi-task" aria-hidden="true"></span> Where?
-                        //        </NavLink>
-                        //    </li>
-                        //}
+                        ShowTypeSubmenu(openedLevel);
                     }
                 }
             }
 
-        </ul>
-    </div>
+            void ShowTypeSubmenu(OpenedLevel level)
+            {
+                if (OpenedLevels.Contains(level))
+                {
+
+                    <li class="nav-item px-4">
+                        <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.multiplechoice)">
+                            <span class="oi oi-task" aria-hidden="true"></span> Multiple Choice
+                        </NavLink>
+                    </li>
+
+
+                    <li class="nav-item px-4">
+                        <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.yesno)">
+                            <span class="oi oi-task" aria-hidden="true"></span> True/False
+                        </NavLink>
+                    </li>
+
+                    // Levels not yet made
+                    //<li class="nav-item px-4">
+                    // <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.plural)">
+                    // <span class="oi oi-task" aria-hidden="true"></span> Plurality
+                    // </NavLink>
+                    //</li>
+
+                    //if (level.navLevel == 2)
+                    //{
+                    // <li class="nav-item px-4">
+                    // <NavLink class="nav-link" @onclick="() => ChooseType(level, NavType.where)">
+                    // <span class="oi oi-task" aria-hidden="true"></span> Where?
+                    // </NavLink>
+                    // </li>
+                    //}
+                }
+            }
+        }
+
+    </ul>
+</div>
 
 
 @code {

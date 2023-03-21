@@ -14,6 +14,7 @@
     <meta charset="utf-8" />
     <title>LevelEditorPage</title>
 </head>
+
 <body>
 
     <AuthorizeView>
@@ -25,22 +26,37 @@
 
 
     <div>
-        <p>
-            <label>Correct Answer:</label>
-            <input @bind="@CorrectAnswer" @oninput="@((e) => { CorrectAnswer=(string)e.Value;})">
-        </p>
-        <p>
-            <label>Wrong Answer 1:</label>
-            <input @bind="@WrongAnswer1" @oninput="@((e) => { WrongAnswer1=(string)e.Value;})">
-        </p>
-        <p>
-            <label>Wrong Answer 2:</label>
-            <input @bind="@WrongAnswer2" @oninput="@((e) => { WrongAnswer2=(string)e.Value;})">
-        </p>
+        @if (LevelType == "multiplechoice")
+        {
+            <p>
+                <label>Correct Answer:</label>
+                <input @bind="@CorrectAnswer" @oninput="@((e) => { CorrectAnswer=(string)e.Value;})">
+            </p>
+            <p>
+                <label>Wrong Answer 1:</label>
+                <input @bind="@WrongAnswer1" @oninput="@((e) => { WrongAnswer1=(string)e.Value;})">
+            </p>
+            <p>
+                <label>Wrong Answer 2:</label>
+                <input @bind="@WrongAnswer2" @oninput="@((e) => { WrongAnswer2=(string)e.Value;})">
+            </p>
+        }
         <p>
             <label>Question Prompt:</label>
-            <input @bind="@Prompt" @oninput="@((e) => { Prompt=(string)e.Value;})" placeholder="optional">
+            @{
+                string placeholderText = LevelType == "yesno" ? "required" : "optional";
+            }
+            <input @bind="@Prompt" @oninput="@((e) => { Prompt=(string)e.Value;})" placeholder=@placeholderText>
         </p>
+        @if (LevelType == "yesno")
+        {
+            <label for="true-false-answer">Answer:</label>
+            <select name="true-false-answer" @bind="@IsTrueString">
+                <option value="true">true</option>
+                <option value="false">false</option>
+            </select>
+        }
+
         <p>
             @if (LoadedFile == null)
             {
@@ -50,35 +66,35 @@
             }
 
             @*Image uploader*@
-            <div>
+        <div>
                 @if (string.IsNullOrEmpty(ImageSource))
                 {
-                    <p>
-                        <label>
-                            Upload an image up to @(allowFileSizeKB) KB:
-                            <InputFile OnChange="@LoadFile" accept="image/*" multiple />
-                        </label>
+                <p>
+                    <label>
+                        Upload an image up to @(allowFileSizeKB) KB:
+                        <InputFile OnChange="@LoadFile" accept="image/*" multiple />
+                    </label>
                         @if (LoadedFile != null)
                         {
-                            <button @onclick="CancelUpload">@(IsUploading ? "Uploading..." : "Cancel")</button>
+                        <button @onclick="CancelUpload">@(IsUploading ? "Uploading..." : "Cancel")</button>
                         }
-                    </p>
+                </p>
 
                     if (IsLoading)
                     {
-                        <p>Uploading...</p>
+                    <p>Uploading...</p>
                     }
                     else if (LoadedFile != null)
                     {
                         string textColorString = "color:#000000";
                         if (LoadedFile.Size > maxFileSize) { textColorString = "color:#FF0000"; }
-                        <ul>
-                            <li>Name: @LoadedFile.Name</li>
-                            <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)LoadedFile.Size / 1024))</li>
-                        </ul>
+                    <ul>
+                        <li>Name: @LoadedFile.Name</li>
+                        <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)LoadedFile.Size / 1024))</li>
+                    </ul>
                     }
                 }
-            </div>
+        </div>
         </p>
 
     </div>
@@ -101,6 +117,10 @@
                     <label>@question.WrongAnswer1</label>
                     <label>@question.WrongAnswer2</label>
                     <label>@question.Prompt</label>
+                    @if (LevelType == "yesno")
+                    {
+                        <label>@question.IsTrue</label>
+                    }
                     @if (!string.IsNullOrEmpty(question.ImageSource))
                     {
                         <img src=@question.ImageSource alt="cannot find image" height="50" style="margin:10px;">
@@ -121,7 +141,11 @@
     string WrongAnswer1 { get; set; } = string.Empty;
     string WrongAnswer2 { get; set; } = string.Empty;
     string Prompt { get; set; } = string.Empty;
+    string IsTrueString { get; set; } = "true";
     string ImageSource { get; set; } = string.Empty;
+
+
+    Question question = new();
 
 
     protected override async Task OnInitializedAsync()
@@ -132,12 +156,21 @@
     }
     async Task AddQuestion()
     {
-        if (!string.IsNullOrEmpty(CorrectAnswer) && !string.IsNullOrEmpty(WrongAnswer1) && !string.IsNullOrEmpty(WrongAnswer2))
+        bool canContinue = false;
+        switch (LevelType)
         {
-            Question question = new();
-            question.CorrectAnswer = CorrectAnswer;
-            question.WrongAnswer1 = WrongAnswer1;
-            question.WrongAnswer2 = WrongAnswer2;
+            case "multiplechoice":
+                canContinue = BuildQuestionMC();
+                break;
+            case "yesno":
+                canContinue = BuildQuestionYN();
+                break;
+            default:
+                break;
+        }
+
+        if (canContinue == true)
+        {
             if (!string.IsNullOrEmpty(Prompt))
             {
                 question.Prompt = Prompt;
@@ -174,6 +207,28 @@
                 });
         }
     }
+
+    bool BuildQuestionMC()
+    {
+        if (!string.IsNullOrEmpty(CorrectAnswer) && !string.IsNullOrEmpty(WrongAnswer1) && !string.IsNullOrEmpty(WrongAnswer2))
+        {
+            question.CorrectAnswer = CorrectAnswer;
+            question.WrongAnswer1 = WrongAnswer1;
+            question.WrongAnswer2 = WrongAnswer2;
+            return true;
+        }
+        return false;
+    }
+
+    bool BuildQuestionYN()
+    {
+        if (!string.IsNullOrEmpty(IsTrueString) && !string.IsNullOrEmpty(Prompt))
+        {
+            question.IsTrue = bool.Parse(IsTrueString);
+            return true;
+        }
+        return false;
+    }
     async Task RemoveQuestion(int index)
     {
         QuestionList.RemoveAt(index);
@@ -183,10 +238,10 @@
     async Task UpdateQuestionSet()
     {
         var update = await Supabase
-      .From<QuestionSet>()
-      .Where(x => x.Id == QuestionSetId)
-      .Set(x => x.Questions, QuestionHashSet)
-      .Update();
+        .From<QuestionSet>()
+        .Where(x => x.Id == QuestionSetId)
+        .Set(x => x.Questions, QuestionHashSet)
+        .Update();
     }
     void ToggleDelete()
     {
