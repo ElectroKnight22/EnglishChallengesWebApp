@@ -1,6 +1,4 @@
 ﻿@using EnglishChallengesWebApp.Resources.Model
-@using Newtonsoft.Json
-@using Supabase.Storage
 
 @inherits Level
 
@@ -87,7 +85,7 @@
                     else if (LoadedFile != null)
                     {
                         string textColorString = "color:#000000";
-                        if (LoadedFile.Size > maxFileSize) { textColorString = "color:#FF0000"; }
+                        if (FileTooLarge) { textColorString = "color:#FF0000"; }
                     <ul>
                         <li>Name: @LoadedFile.Name</li>
                         <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)LoadedFile.Size / 1024))</li>
@@ -97,6 +95,9 @@
         </div>
         </p>
 
+    </div>
+    <div>
+        <button class="btn btn-primary" @onclick="ClearInputs">Clear</button>
     </div>
     <div>
         <button class="btn btn-primary" @onclick="AddQuestion">Add</button>
@@ -152,6 +153,17 @@
     }
     async Task AddQuestion()
     {
+        if (FileTooLarge)
+        {
+            await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Icon = "error",
+                    Title = "Image too large!",
+                    Text = "You have exceeded the maximum image size. Please upload an image smaller than 1.5mb.",
+                });
+            return;
+        }
+
         bool canContinue = false;
         switch (LevelType)
         {
@@ -195,7 +207,7 @@
         }
         else
         {
-            SweetAlertResult result = await Swal.FireAsync(new SweetAlertOptions
+            await Swal.FireAsync(new SweetAlertOptions
                 {
                     Icon = "error",
                     Title = "Oops...",

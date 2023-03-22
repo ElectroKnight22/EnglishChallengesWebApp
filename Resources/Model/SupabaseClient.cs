@@ -18,6 +18,7 @@ namespace EnglishChallengesWebApp.Resources.Model
         protected const long allowFileSizeKB = 1500;
         protected long maxFileSize = 1024 * allowFileSizeKB;
         protected int maxAllowedFiles = 0; // 0 means unlimited
+        protected bool FileTooLarge {get; set;} = false;
         protected bool IsUploading { get; set; } = false;
         protected bool IsLoading { get; set; } = false;
 
@@ -83,6 +84,7 @@ namespace EnglishChallengesWebApp.Resources.Model
             try
             {
                 LoadedFile = e.File;
+                FileTooLarge = (LoadedFile.Size > maxFileSize);
             }
             catch
             {
