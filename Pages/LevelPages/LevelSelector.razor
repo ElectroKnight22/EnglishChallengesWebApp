@@ -46,7 +46,7 @@
     [Parameter]
     public int LevelNumber { get; set; }
     [ParameterAttribute]
-    public string LevelType { get; set; }
+    public string LevelType { get; set; } = string.Empty;
     bool isEditing { get; set; } = false;
     List<QuestionSet> QuestionSets { get; set; } = new();
     protected override async Task OnInitializedAsync()

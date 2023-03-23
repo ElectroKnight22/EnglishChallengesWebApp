@@ -7,7 +7,7 @@ namespace EnglishChallengesWebApp.Resources.Model
     public class SupabaseClient: ComponentBase
     {
         [Inject]
-        protected Supabase.Client Supabase { get; set; }
+        protected Supabase.Client Supabase { get; set; }  = default!;
 
         protected static readonly string _storageName = "question-image-bank";
         protected static readonly string _CDNURL = "https://qhmtgkkbpwqfroujzubx.supabase.co/storage/v1/object/public/" + _storageName + "/";

@@ -28,15 +28,15 @@
         {
             <p>
                 <label>Correct Answer:</label>
-                <input @bind="@CorrectAnswer" @oninput="@((e) => { CorrectAnswer=(string)e.Value;})">
+                <input @bind="@CorrectAnswer">
             </p>
             <p>
                 <label>Wrong Answer 1:</label>
-                <input @bind="@WrongAnswer1" @oninput="@((e) => { WrongAnswer1=(string)e.Value;})">
+                <input @bind="@WrongAnswer1">
             </p>
             <p>
                 <label>Wrong Answer 2:</label>
-                <input @bind="@WrongAnswer2" @oninput="@((e) => { WrongAnswer2=(string)e.Value;})">
+                <input @bind="@WrongAnswer2">
             </p>
         }
         <p>
@@ -44,7 +44,7 @@
             @{
                 string placeholderText = LevelType == "yesno" ? "required" : "optional";
             }
-            <input @bind="@Prompt" @oninput="@((e) => { Prompt=(string)e.Value;})" placeholder=@placeholderText>
+            <input @bind="@Prompt" placeholder=@placeholderText>
         </p>
         @if (LevelType == "yesno")
         {
@@ -59,7 +59,7 @@
             @if (LoadedFile == null)
             {
                 <label>Image link OR name in gallery:</label>
-                <input @bind="@ImageSource" @oninput="@((e) => { ImageSource=(string)e.Value;})">
+                <input @bind="@ImageSource">
                 <label> or </label>
             }
 
@@ -183,7 +183,7 @@
             {
                 question.Prompt = Prompt;
             }
-            if (Uri.TryCreate(ImageSource, UriKind.Absolute, out Uri uriResult)
+            if (Uri.TryCreate(ImageSource, UriKind.Absolute, out Uri? uriResult)
             && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
             {
                 question.ImageSource = ImageSource;
@@ -248,7 +248,7 @@
         var update = await Supabase
         .From<QuestionSet>()
         .Where(x => x.Id == QuestionSetId)
-        .Set(x => x.Questions, QuestionHashSet)
+        .Set(x => x.Questions?? new(), QuestionHashSet)
         .Update();
     }
     void ToggleDelete()

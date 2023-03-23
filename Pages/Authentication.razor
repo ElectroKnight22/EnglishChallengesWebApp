@@ -8,8 +8,8 @@
 <RemoteAuthenticatorView Action="@Action">
     <LogOut>
         @{
-            var authority = (string)Configuration["Auth0:Authority"];
-            var clientId = (string)Configuration["Auth0:ClientId"];
+            string authority = Configuration["Auth0:Authority"]?.ToString() ?? string.Empty;
+            string clientId = Configuration["Auth0:ClientId"]?.ToString() ?? string.Empty;
 
             Navigation.NavigateTo($"{authority}/v2/logout?client_id={clientId}");
         }
@@ -17,5 +17,5 @@
 </RemoteAuthenticatorView>
 
 @code {
-    [Parameter] public string Action { get; set; }
+    [Parameter] public string Action { get; set; } = default!;
 }

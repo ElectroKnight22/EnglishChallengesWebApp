@@ -1,8 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 
-@inject NavigationManager Navigation
-@inject SignOutSessionStateManager SignOutManager
+@inject NavigationManager NavMan
 
 
 <div class="top-row ps-3 navbar navbar-dark">
@@ -57,7 +56,10 @@
                 <AuthorizeView>
                     <Authorized>
                         <NavLink class="nav-link" href="#" @onclick="() => ToggleNavMenu()">
-                            Hello, @context.User.Identity.Name!
+                            @{
+                                string name = context.User.Identity?.Name ?? "User";
+                            }
+                            Hello, @name!
                             <span class="oi oi-account-logout" aria-hidden="true" @onclick="BeginSignOut">
                             </span> Sign out
                         </NavLink>
@@ -163,7 +165,7 @@
             this.navLevel = level;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj == null || GetType() != obj.GetType())
             {
@@ -183,14 +185,13 @@
 
     private HashSet<NavSubmenu> OpenedSubmenus = new();
     private HashSet<OpenedLevel> OpenedLevels = new();
-    private string NavMenuCssClass => isNavMenuCollapsed ? "collapse" : null;
+    private string? NavMenuCssClass => isNavMenuCollapsed ? "collapse" : null;
     private bool isNavMenuCollapsed = true;
     private int totalLevels { get; set; } = 4;
 
-    private async Task BeginSignOut(MouseEventArgs args)
+    private void BeginSignOut(MouseEventArgs args)
     {
-        await SignOutManager.SetSignOutState();
-        Navigation.NavigateTo("authentication/logout");
+        NavMan.NavigateToLogout("authentication/logout");
     }
 
     private void ToggleNavMenu()
@@ -222,8 +223,6 @@
             OpenedLevels.Add(level);
         }
     }
-
-    @inject NavigationManager NavMan
 
     private void ChooseType(OpenedLevel level, NavType type)
     {

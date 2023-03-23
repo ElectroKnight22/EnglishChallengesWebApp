@@ -10,9 +10,9 @@ namespace EnglishChallengesWebApp.Resources.Model
     public abstract class LevelDisplay : Level, ILevelDisplay
     {
         [Inject]
-        protected SpeechSynthesis Speaker { get; set; }
+        protected SpeechSynthesis Speaker { get; set; } = default!;
         [Inject]
-        protected NavigationManager NavMan { get; set; }
+        protected NavigationManager NavMan { get; set; } = default!;
         public string LevelTitle { get; set; } = string.Empty;
         public int QuestionNumber { get; set; }
         public int Score { get; set; }
@@ -23,7 +23,7 @@ namespace EnglishChallengesWebApp.Resources.Model
         public List<string> AnswerTexts { get; set; } = new();
         public string Prompt { get; set; } = string.Empty;
 
-        IEnumerable<SpeechSynthesisVoice> Voices;
+        IEnumerable<SpeechSynthesisVoice> Voices = default!;
 
         protected override async Task OnInitializedAsync()
         {

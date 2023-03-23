@@ -7,7 +7,7 @@ namespace EnglishChallengesWebApp.Resources.Model
     public class Level: SupabaseClient, ILevel
     {
         [Inject]
-        protected SweetAlertService Swal { get; set; }
+        protected SweetAlertService Swal { get; set; } = default!;
 
         [Parameter]
         public int LevelNumber { get; set; }
@@ -20,8 +20,8 @@ namespace EnglishChallengesWebApp.Resources.Model
 
         protected async Task<bool> LoadQuestionSet()
         {
-            var result = await Supabase.From<QuestionSet>().Where(x => x.Id == QuestionSetId).Select(x => new object[] { x.Questions }).Single();
-            if (result.Questions != null)
+            var result = await Supabase.From<QuestionSet>().Where(x => x.Id == QuestionSetId).Select(x => new object[] { x.Questions?? new() }).Single();
+            if (result?.Questions != null)
             {
                 QuestionHashSet = result.Questions;
                 QuestionList = QuestionHashSet.OrderBy(x => Guid.NewGuid()).ToList();
