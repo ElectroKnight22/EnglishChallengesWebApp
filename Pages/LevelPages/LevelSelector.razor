@@ -20,18 +20,16 @@
         //    </Authorized>
         //</AuthorizeView>
 
-        <button class="btn btn-primary" @onclick="ToggleEdit" style="margin:10px;">@(isEditing ? "Editing" : "Playing") <span class=@(isEditing ? "oi oi-pencil" : "oi oi-play-circle")></span></button>
-        if (isEditing)
-        {
-            <button class="btn btn-primary" @onclick="AddQuestionSet" style="margin:10px;">New <span class="oi oi-plus"></span></button>
-        }
+        <button class="btn btn-primary" @onclick="AddQuestionSet" style="margin:10px;">New <span class="oi oi-plus"></span></button>
+        <button class="btn btn-primary" @onclick="ToggleDelete" style="margin:10px;">Delete <span class="oi oi-trash"></span></button>
+
 
         foreach (QuestionSet questionSet in QuestionSets)
         {
             if (questionSet.LevelNumber == LevelNumber && questionSet.LevelType == LevelType)
             {
                 <div>
-                    @if (isEditing)
+                    @if (isDeleting)
                     {
                         <button class="btn btn-danger" style="margin:10px;" @onclick="() =>RemoveQuestionSet(questionSet)">Delete</button>
                     }
@@ -47,7 +45,7 @@
     public int LevelNumber { get; set; }
     [ParameterAttribute]
     public string LevelType { get; set; } = string.Empty;
-    bool isEditing { get; set; } = false;
+    bool isDeleting { get; set; } = false;
     List<QuestionSet> QuestionSets { get; set; } = new();
     protected override async Task OnInitializedAsync()
     {
@@ -60,12 +58,12 @@
     }
     void OpenQuestionSet(QuestionSet questionSet)
     {
-        string place = isEditing ? "Editing" : "Playing";
+        string place = isDeleting ? "Editing" : "Playing";
         NavMan.NavigateTo($"{place}/{LevelNumber}/{LevelType}/{questionSet.Id}/");
     }
-    void ToggleEdit()
+    void ToggleDelete()
     {
-        isEditing = !isEditing;
+        isDeleting = !isDeleting;
     }
     async Task AddQuestionSet()
     {
