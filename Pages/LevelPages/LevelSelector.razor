@@ -47,6 +47,8 @@
     public string LevelType { get; set; } = string.Empty;
     bool isDeleting { get; set; } = false;
     List<QuestionSet> QuestionSets { get; set; } = new();
+
+    private bool isStudent { get; set; } = false;
     protected override async Task OnInitializedAsync()
     {
         await LoadQuestionSets();
@@ -58,7 +60,7 @@
     }
     void OpenQuestionSet(QuestionSet questionSet)
     {
-        string place = isDeleting ? "Editing" : "Playing";
+        string place = isStudent ? "Playing" : "Editing";
         NavMan.NavigateTo($"{place}/{LevelNumber}/{LevelType}/{questionSet.Id}/");
     }
     void ToggleDelete()

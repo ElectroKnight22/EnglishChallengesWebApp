@@ -1,5 +1,7 @@
 ﻿@using EnglishChallengesWebApp.Resources.Model
 
+@inject NavigationManager NavMan
+
 @inherits Level
 
 @page "/Editing/{LevelNumber:int}/{LevelType}/{QuestionSetId:int}"
@@ -19,6 +21,7 @@
         <Authorized>
             <button class="btn btn-primary" @onclick="ToggleDelete" style="margin:10px;">Edit</button>
             <button class="btn btn-primary" @onclick="AddQuestion" style="margin:10px;">Add</button>
+            <button class="btn btn-primary" @onclick="PlayLevel" style="margin:10px;">Play</button>
         </Authorized>
     </AuthorizeView>
 
@@ -102,6 +105,7 @@
     <div>
         <button class="btn btn-primary" @onclick="AddQuestion">Add</button>
         <button class="btn btn-primary" @onclick="ToggleDelete">@(isDeleting ? "Deleting" : "Delete")</button>
+        <button class="btn btn-primary" @onclick="PlayLevel" style="margin:10px;">Play</button>
     </div>
     <div>
         @{
@@ -132,6 +136,7 @@
 
 
 @code {
+
     bool isDeleting { get; set; } = false;
 
     string CorrectAnswer { get; set; } = string.Empty;
@@ -151,6 +156,12 @@
         await RetrieveAllFiles();
         await LoadQuestionSet();
     }
+
+    private void PlayLevel()
+    {
+        NavMan.NavigateTo($"Playing/{LevelNumber}/{LevelType}/{QuestionSetId}/");
+    }
+
     async Task AddQuestion()
     {
         if (FileTooLarge)
