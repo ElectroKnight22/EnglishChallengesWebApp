@@ -113,20 +113,28 @@
             foreach (Question question in QuestionList)
             {
                 int i = index;
-                <p>
-                    @if (isDeleting)
-                    {
-                        <button class="btn btn-danger" @onclick="() => RemoveQuestion(i)">Delete</button>
-                    }
-                    <label>@question.CorrectAnswer</label>
-                    <label>@question.WrongAnswer1</label>
-                    <label>@question.WrongAnswer2</label>
-                    <label>@question.Prompt</label>
-                    @if (!string.IsNullOrEmpty(question.ImageSource))
-                    {
-                        <img src=@question.ImageSource alt="cannot find image" height="50" style="margin:10px;">
-                    }
-                </p>
+
+                <div class="card" @onclick="EditQuestion">
+                    <img src=@question.ImageSource alt="Avatar">
+                    <div class="container">
+                        <p>@question.Prompt</p>
+                    </div>
+                </div>
+
+                //<p>
+                //    @if (isDeleting)
+                //    {
+                //        <button class="btn btn-danger" @onclick="() => RemoveQuestion(i)">Delete</button>
+                //    }
+                //    <label>@question.CorrectAnswer</label>
+                //    <label>@question.WrongAnswer1</label>
+                //    <label>@question.WrongAnswer2</label>
+                //    <label>@question.Prompt</label>
+                //    @if (!string.IsNullOrEmpty(question.ImageSource))
+                //    {
+                //        <img src=@question.ImageSource alt="cannot find image" height="50" style="margin:10px;">
+                //    }
+                //</p>
                 index++;
             }
         }
@@ -225,6 +233,11 @@
                     Text = "It seems like you have not entered an answer for your new question.",
                 });
         }
+    }
+
+    async Task EditQuestion()
+    {
+        
     }
 
     bool BuildQuestionMC()
