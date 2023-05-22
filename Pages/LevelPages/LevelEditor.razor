@@ -28,16 +28,31 @@
 
     <dialog @ref="dialogRef">
         <div>
-            <button @onclick="CloseDialog">Save</button>
+            <input type="submit" value="Save" />
             <button style="float: right" @onclick="CloseDialog">Close</button>
         </div>
-        <div >
-            <img style="display:inline" src="@ImageSource" />
-            <form style="display:inline" method="dialog">
-                <input type="text" value="@Prompt" />
-                <input type="text" value="@CorrectAnswer" />
-                <input type="text" value="@WrongAnswer1" />
-                <input type="text" value="@WrongAnswer2" />
+        <div>
+            <img src="@ImageSource" />
+            <form method="dialog">
+                <label for="prompt">Question Prompt</label>
+                <input id="prompt" type="text" value="@Prompt" />
+                @if (LevelType == "yesno")
+                {
+                    <label for="ca">Correct Answer</label>
+                    <select id="ca" name="true-false-answer" @bind="@IsTrueString">
+                        <option value="True">yes</option>
+                        <option value="False">no</option>
+                    </select>
+                }
+                else
+                {
+                    <label for="ca">Correct Answer</label>
+                    <input id="ca" type="text" value="@CorrectAnswer" />
+                    <label for="wa1">Wrong Answer 1</label>
+                    <input id="wa1" type="text" value="@WrongAnswer1" />
+                    <label for="wa2">Wrong Answer 2</label>
+                    <input id="wa2" type="text" value="@WrongAnswer2" />
+                }
             </form>
         </div>
     </dialog>
@@ -134,7 +149,7 @@
 
                 <button @onclick="@(e => OpenDialog(question))" class="card-button" style="border: none">
                     <div class="card">
-                        <img src=@question.ImageSource alt="Avatar">
+                        <img class="card-image" src=@question.ImageSource alt="Avatar">
                         <div class="container">
                             <p>@question.Prompt</p>
                         </div>

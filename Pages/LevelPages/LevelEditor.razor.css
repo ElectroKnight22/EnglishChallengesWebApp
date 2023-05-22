@@ -25,7 +25,7 @@
 }
 
 /* Add rounded corners to the top left and the top right corner of the image */
-img {
+.card-image {
     border-radius: 5px 5px 0 0;
     object-fit: cover;
     max-height: 100px;
