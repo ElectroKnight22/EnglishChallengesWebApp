@@ -55,52 +55,53 @@
                 }
             </form>
         </div>
+
+        <!--file upload div-->
+        <div>
+            <p>
+                @if (LoadedFile == null)
+                {
+                    <label>Image link OR name in gallery:</label>
+                    <input @bind="@ImageSource">
+                    <label> or </label>
+                }
+
+                @*Image uploader*@
+                <div>
+                    @if (string.IsNullOrEmpty(ImageSource))
+                    {
+                        <p>
+                            <label>
+                                Upload an image up to @(allowFileSizeKB) KB:
+                                <InputFile OnChange="@LoadFile" accept="image/*" multiple />
+                            </label>
+                            @if (LoadedFile != null)
+                            {
+                                <button @onclick="CancelUpload">@(IsUploading ? "Uploading..." : "Cancel")</button>
+                            }
+                        </p>
+
+                        if (IsLoading)
+                        {
+                            <p>Uploading...</p>
+                        }
+                        else if (LoadedFile != null)
+                        {
+                            string textColorString = "color:#000000";
+                            if (FileTooLarge) { textColorString = "color:#FF0000"; }
+                            <ul>
+                                <li>Name: @LoadedFile.Name</li>
+                                <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)LoadedFile.Size / 1024))</li>
+                            </ul>
+                        }
+                    }
+                </div>
+            </p>
+
+        </div>
     </dialog>
 
 
-
-    <div>
-        <p>
-            @if (LoadedFile == null)
-            {
-                <label>Image link OR name in gallery:</label>
-                <input @bind="@ImageSource">
-                <label> or </label>
-            }
-
-            @*Image uploader*@
-            <div>
-                @if (string.IsNullOrEmpty(ImageSource))
-                {
-                    <p>
-                        <label>
-                            Upload an image up to @(allowFileSizeKB) KB:
-                            <InputFile OnChange="@LoadFile" accept="image/*" multiple />
-                        </label>
-                        @if (LoadedFile != null)
-                        {
-                            <button @onclick="CancelUpload">@(IsUploading ? "Uploading..." : "Cancel")</button>
-                        }
-                    </p>
-
-                    if (IsLoading)
-                    {
-                        <p>Uploading...</p>
-                    }
-                    else if (LoadedFile != null)
-                    {
-                        string textColorString = "color:#000000";
-                        if (FileTooLarge) { textColorString = "color:#FF0000"; }
-                        <ul>
-                            <li>Name: @LoadedFile.Name</li>
-                            <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)LoadedFile.Size / 1024))</li>
-                        </ul>
-                    }
-                }
-            </div>
-        </p>
-
-    </div>
     <div>
         <button class="btn btn-primary" @onclick="@(e => OpenDialog(null))">Add New</button>
         <button class="btn btn-primary" @onclick="PlayLevel" style="margin:10px;">Play</button>
