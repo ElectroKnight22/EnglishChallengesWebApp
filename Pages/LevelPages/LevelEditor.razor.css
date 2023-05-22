@@ -36,4 +36,11 @@
 
 dialog {
     padding: 10px;
+    max-width:90%;
+    max-height:90%;
+}
+
+.dialog-image{
+    max-width:90%;
+    max-height:70%;
 }

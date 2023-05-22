@@ -24,6 +24,10 @@ namespace EnglishChallengesWebApp.Resources.Model
             if (result?.Questions != null)
             {
                 QuestionHashSet = result.Questions;
+                foreach (Question question in QuestionHashSet)
+                {
+                    if (question.Guid ==  Guid.Empty || question.Guid == null) question.Guid = Guid.NewGuid();
+                }
                 QuestionList = QuestionHashSet.OrderBy(x => Guid.NewGuid()).ToList();
                 return true;
             }

@@ -19,7 +19,6 @@
 <body>
     <AuthorizeView>
         <Authorized>
-            <button class="btn btn-primary" @onclick="ToggleDelete" style="margin:10px;">Edit</button>
             <button class="btn btn-primary" @onclick="AddQuestion" style="margin:10px;">Add</button>
             <button class="btn btn-primary" @onclick="PlayLevel" style="margin:10px;">Play</button>
         </Authorized>
@@ -28,14 +27,15 @@
 
     <dialog @ref="dialogRef">
         <div>
-            <input type="submit" value="Save" />
+            <input type="submit" value="Save" @onclick="@(isEditing? UpdateQuestion : AddQuestion)" />
+            <button @onclick="RemoveQuestion">Delete</button>
             <button style="float: right" @onclick="CloseDialog">Close</button>
         </div>
         <div>
-            <img src="@ImageSource" />
+            <img class="dialog-image" src="@ImageSource" />
             <form method="dialog">
                 <label for="prompt">Question Prompt</label>
-                <input id="prompt" type="text" value="@Prompt" />
+                <input id="prompt" type="text" @bind="@Prompt" />
                 @if (LevelType == "yesno")
                 {
                     <label for="ca">Correct Answer</label>
@@ -47,11 +47,11 @@
                 else
                 {
                     <label for="ca">Correct Answer</label>
-                    <input id="ca" type="text" value="@CorrectAnswer" />
+                    <input id="ca" type="text" @bind="@CorrectAnswer" />
                     <label for="wa1">Wrong Answer 1</label>
-                    <input id="wa1" type="text" value="@WrongAnswer1" />
+                    <input id="wa1" type="text" @bind="@WrongAnswer1" />
                     <label for="wa2">Wrong Answer 2</label>
-                    <input id="wa2" type="text" value="@WrongAnswer2" />
+                    <input id="wa2" type="text" @bind="@WrongAnswer2" />
                 }
             </form>
         </div>
@@ -60,37 +60,6 @@
 
 
     <div>
-        @if (LevelType == "multiplechoice")
-        {
-            <p>
-                <label>Correct Answer:</label>
-                <input @bind="@CorrectAnswer">
-            </p>
-            <p>
-                <label>Wrong Answer 1:</label>
-                <input @bind="@WrongAnswer1">
-            </p>
-            <p>
-                <label>Wrong Answer 2:</label>
-                <input @bind="@WrongAnswer2">
-            </p>
-        }
-        <p>
-            <label>Question Prompt:</label>
-            @{
-                string placeholderText = LevelType == "yesno" ? "required" : "optional";
-            }
-            <input @bind="@Prompt" placeholder=@placeholderText>
-        </p>
-        @if (LevelType == "yesno")
-        {
-            <label for="true-false-answer">Answer:</label>
-            <select name="true-false-answer" @bind="@IsTrueString">
-                <option value="True">yes</option>
-                <option value="False">no</option>
-            </select>
-        }
-
         <p>
             @if (LoadedFile == null)
             {
@@ -133,11 +102,7 @@
 
     </div>
     <div>
-        <button class="btn btn-primary" @onclick="ClearInputs">Clear Input</button>
-    </div>
-    <div>
-        <button class="btn btn-primary" @onclick="AddQuestion">Add</button>
-        <button class="btn btn-primary" @onclick="ToggleDelete">@(isDeleting ? "Deleting" : "Delete")</button>
+        <button class="btn btn-primary" @onclick="@(e => OpenDialog(null))">Add New</button>
         <button class="btn btn-primary" @onclick="PlayLevel" style="margin:10px;">Play</button>
     </div>
     <div>
@@ -155,21 +120,6 @@
                         </div>
                     </div>
                 </button>
-
-                //<p>
-                //    @if (isDeleting)
-                //    {
-                //        <button class="btn btn-danger" @onclick="() => RemoveQuestion(i)">Delete</button>
-                //    }
-                //    <label>@question.CorrectAnswer</label>
-                //    <label>@question.WrongAnswer1</label>
-                //    <label>@question.WrongAnswer2</label>
-                //    <label>@question.Prompt</label>
-                //    @if (!string.IsNullOrEmpty(question.ImageSource))
-                //    {
-                //        <img src=@question.ImageSource alt="cannot find image" height="50" style="margin:10px;">
-                //    }
-                //</p>
                 index++;
             }
         }
@@ -180,7 +130,8 @@
 @code {
     ElementReference dialogRef;
 
-    bool isDeleting { get; set; } = false;
+
+    bool isEditing { get; set; } = false;
 
     string CorrectAnswer { get; set; } = string.Empty;
     string WrongAnswer1 { get; set; } = string.Empty;
@@ -188,6 +139,7 @@
     string Prompt { get; set; } = string.Empty;
     string IsTrueString { get; set; } = "True";
     string ImageSource { get; set; } = string.Empty;
+    Guid guid { get; set; }
 
 
     Question question = new();
@@ -205,27 +157,29 @@
         NavMan.NavigateTo($"Playing/{LevelNumber}/{LevelType}/{QuestionSetId}/");
     }
 
-    async Task AddQuestion()
+
+    async Task<bool> BuildQuestion()
     {
         if (FileTooLarge)
         {
+            await CloseDialog();
             await Swal.FireAsync(new SweetAlertOptions
                 {
                     Icon = "error",
                     Title = "Image too large!",
                     Text = "You have exceeded the maximum image size. Please upload an image smaller than 1.5mb.",
                 });
-            return;
+            return false;
         }
 
         bool canContinue = false;
         switch (LevelType)
         {
             case "multiplechoice":
-                canContinue = BuildQuestionMC();
+                canContinue = BuildAnswerMC();
                 break;
             case "yesno":
-                canContinue = BuildQuestionYN();
+                canContinue = BuildAnswerYN();
                 break;
             default:
                 break;
@@ -252,15 +206,19 @@
                 await UploadFile();
             }
 
+            question.Guid = Guid.NewGuid();
+
             QuestionHashSet.Add(question);
 
-            await UpdateQuestionSet();
-            await LoadQuestionSet();
+            return true;
 
-            ClearInputs();
+
+
         }
         else
         {
+            return false;
+            await CloseDialog();
             await Swal.FireAsync(new SweetAlertOptions
                 {
                     Icon = "error",
@@ -270,12 +228,36 @@
         }
     }
 
-    async Task EditQuestion()
+    async Task AddQuestion()
     {
-        //
+        bool success = await BuildQuestion();
+        if (success)
+        {
+            await UpdateQuestionSet();
+            await LoadQuestionSet();
+        }
+        await CloseDialog();
     }
 
-    bool BuildQuestionMC()
+
+    async Task UpdateQuestion()
+    {
+        bool success = await BuildQuestion();
+        if (success)
+        {
+
+            Question oldQuestion = new()
+                {
+                    Guid = guid,
+                };
+            QuestionHashSet.Remove(oldQuestion);
+            await UpdateQuestionSet();
+            await LoadQuestionSet();
+        }
+       await CloseDialog();
+    }
+
+    bool BuildAnswerMC()
     {
         if (!string.IsNullOrEmpty(CorrectAnswer) && !string.IsNullOrEmpty(WrongAnswer1) && !string.IsNullOrEmpty(WrongAnswer2))
         {
@@ -287,7 +269,7 @@
         return false;
     }
 
-    bool BuildQuestionYN()
+    bool BuildAnswerYN()
     {
         if (!string.IsNullOrEmpty(IsTrueString) && !string.IsNullOrEmpty(Prompt))
         {
@@ -296,11 +278,13 @@
         }
         return false;
     }
-    async Task RemoveQuestion(int index)
+    async Task RemoveQuestion()
     {
-        QuestionList.RemoveAt(index);
-        QuestionHashSet = QuestionList.ToHashSet();
+        Question question = new() { Guid = guid, };
+        QuestionHashSet.Remove(question);
+        await CloseDialog();
         await UpdateQuestionSet();
+        await LoadQuestionSet();
     }
     async Task UpdateQuestionSet()
     {
@@ -310,10 +294,6 @@
         .Set(x => x.Questions ?? new(), QuestionHashSet)
         .Update();
     }
-    void ToggleDelete()
-    {
-        isDeleting = !isDeleting;
-    }
     void ClearInputs()
     {
         CorrectAnswer = string.Empty;
@@ -322,6 +302,7 @@
         Prompt = string.Empty;
         ImageSource = string.Empty;
         LoadedFile = null;
+        guid = Guid.Empty;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -340,19 +321,26 @@
         }
     }
 
-    async Task OpenDialog(Question question)
+    async Task OpenDialog(Question? question)
     {
-        CorrectAnswer = question.CorrectAnswer;
-        WrongAnswer1 = question.WrongAnswer1;
-        WrongAnswer2 = question.WrongAnswer2;
-        Prompt = question.Prompt;
-        ImageSource = question.ImageSource;
+        if (question != null)
+        {
+            isEditing = true;
+            CorrectAnswer = question.CorrectAnswer;
+            WrongAnswer1 = question.WrongAnswer1;
+            WrongAnswer2 = question.WrongAnswer2;
+            Prompt = question.Prompt;
+            ImageSource = question.ImageSource;
+            guid = question.Guid;
+        }
 
         await JS.InvokeVoidAsync("BlazorDialog.open", dialogRef);
     }
 
     async Task CloseDialog()
     {
+        isEditing = false;
+        ClearInputs();
         await JS.InvokeVoidAsync("BlazorDialog.close", dialogRef);
     }
 }
