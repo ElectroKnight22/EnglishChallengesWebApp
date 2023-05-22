@@ -1,6 +1,7 @@
 ﻿@using EnglishChallengesWebApp.Resources.Model
 
 @inject NavigationManager NavMan
+@inject IJSRuntime JS
 
 @inherits Level
 
@@ -16,7 +17,6 @@
 </head>
 
 <body>
-
     <AuthorizeView>
         <Authorized>
             <button class="btn btn-primary" @onclick="ToggleDelete" style="margin:10px;">Edit</button>
@@ -24,6 +24,14 @@
             <button class="btn btn-primary" @onclick="PlayLevel" style="margin:10px;">Play</button>
         </Authorized>
     </AuthorizeView>
+
+
+    <dialog @ref="dialogRef">
+        <h2>Hello Dialog</h2>
+        <p>This is an example of the HTML5 dialog element, which can be controlled using JavaScript and Blazor.</p>
+        <button @onclick="CloseDialog">Close Dialog</button>
+    </dialog>
+
 
 
     <div>
@@ -67,35 +75,35 @@
             }
 
             @*Image uploader*@
-        <div>
+            <div>
                 @if (string.IsNullOrEmpty(ImageSource))
                 {
-                <p>
-                    <label>
-                        Upload an image up to @(allowFileSizeKB) KB:
-                        <InputFile OnChange="@LoadFile" accept="image/*" multiple />
-                    </label>
+                    <p>
+                        <label>
+                            Upload an image up to @(allowFileSizeKB) KB:
+                            <InputFile OnChange="@LoadFile" accept="image/*" multiple />
+                        </label>
                         @if (LoadedFile != null)
                         {
-                        <button @onclick="CancelUpload">@(IsUploading ? "Uploading..." : "Cancel")</button>
+                            <button @onclick="CancelUpload">@(IsUploading ? "Uploading..." : "Cancel")</button>
                         }
-                </p>
+                    </p>
 
                     if (IsLoading)
                     {
-                    <p>Uploading...</p>
+                        <p>Uploading...</p>
                     }
                     else if (LoadedFile != null)
                     {
                         string textColorString = "color:#000000";
                         if (FileTooLarge) { textColorString = "color:#FF0000"; }
-                    <ul>
-                        <li>Name: @LoadedFile.Name</li>
-                        <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)LoadedFile.Size / 1024))</li>
-                    </ul>
+                        <ul>
+                            <li>Name: @LoadedFile.Name</li>
+                            <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)LoadedFile.Size / 1024))</li>
+                        </ul>
                     }
                 }
-        </div>
+            </div>
         </p>
 
     </div>
@@ -114,12 +122,14 @@
             {
                 int i = index;
 
-                <div class="card" @onclick="EditQuestion">
-                    <img src=@question.ImageSource alt="Avatar">
-                    <div class="container">
-                        <p>@question.Prompt</p>
+                <button @onclick="OpenDialog" style="border: none">
+                    <div class="card">
+                        <img src=@question.ImageSource alt="Avatar">
+                        <div class="container">
+                            <p>@question.Prompt</p>
+                        </div>
                     </div>
-                </div>
+                </button>
 
                 //<p>
                 //    @if (isDeleting)
@@ -142,8 +152,8 @@
 </body>
 
 
-
 @code {
+    ElementReference dialogRef;
 
     bool isDeleting { get; set; } = false;
 
@@ -237,7 +247,7 @@
 
     async Task EditQuestion()
     {
-        
+    //
     }
 
     bool BuildQuestionMC()
@@ -272,7 +282,7 @@
         var update = await Supabase
         .From<QuestionSet>()
         .Where(x => x.Id == QuestionSetId)
-        .Set(x => x.Questions?? new(), QuestionHashSet)
+        .Set(x => x.Questions ?? new(), QuestionHashSet)
         .Update();
     }
     void ToggleDelete()
@@ -287,5 +297,32 @@
         Prompt = string.Empty;
         ImageSource = string.Empty;
         LoadedFile = null;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("BlazorDialogReady");
+                await JS.InvokeVoidAsync("BlazorDialog.registerDialog", dialogRef);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+        }
+    }
+
+    async Task OpenDialog()
+    {
+        await JS.InvokeVoidAsync("BlazorDialog.open", dialogRef);
+    }
+
+    async Task CloseDialog()
+    {
+        await JS.InvokeVoidAsync("BlazorDialog.close", dialogRef);
     }
 }

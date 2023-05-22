@@ -30,6 +30,26 @@
     <script src="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/CurrieTechnologies.Razor.SweetAlert2/sweetAlert2.min.js"></script>
+    <script>
+        window.BlazorDialogReady = new Promise(function (resolve) {
+            window.BlazorDialog = {
+                registerDialog: (dialog) => {
+                    dialog.closeEvent = new CustomEvent('close', { bubbles: true });
+                    dialog.addEventListener('cancel', function () {
+                        dialog.dispatchEvent(dialog.closeEvent);
+                    });
+                    resolve();
+                },
+                open: (dialog) => {
+                    dialog.showModal();
+                },
+                close: (dialog) => {
+                    dialog.close();
+                }
+            }
+        });
+
+    </script>
 </body>
 
 </html>
