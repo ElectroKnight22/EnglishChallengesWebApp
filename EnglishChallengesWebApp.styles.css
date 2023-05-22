@@ -1,3 +1,43 @@
+/* /Pages/LevelPages/LevelEditor.razor.rz.scp.css */
+body[b-l2lesdyyjl] {
+}
+
+.card-button[b-l2lesdyyjl] {
+    margin: 5px;
+    background-color: transparent;
+}
+
+.card[b-l2lesdyyjl] {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    border-radius: 5px; /* 5px rounded corners */
+    width:300px;
+    float: left;
+}
+
+/* On mouse-over, add a deeper shadow */
+.card:hover[b-l2lesdyyjl] {
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+
+/* Add some padding inside the card container */
+.container[b-l2lesdyyjl] {
+    padding: 2px 16px;
+}
+
+/* Add rounded corners to the top left and the top right corner of the image */
+img[b-l2lesdyyjl] {
+    border-radius: 5px 5px 0 0;
+    object-fit: cover;
+    max-height: 100px;
+    min-height:100px;
+    min-width:100%;
+
+}
+
+dialog[b-l2lesdyyjl] {
+    padding: 10px;
+}
 /* /Shared/MainLayout.razor.rz.scp.css */
 .page[b-zjjmrsvd71] {
     position: relative;
