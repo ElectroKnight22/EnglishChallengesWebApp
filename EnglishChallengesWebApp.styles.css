@@ -37,6 +37,13 @@ body[b-l2lesdyyjl] {
 
 dialog[b-l2lesdyyjl] {
     padding: 10px;
+    max-width:90%;
+    max-height:90%;
+}
+
+.dialog-image[b-l2lesdyyjl]{
+    max-width:90%;
+    max-height:70vh;
 }
 /* /Shared/MainLayout.razor.rz.scp.css */
 .page[b-zjjmrsvd71] {
