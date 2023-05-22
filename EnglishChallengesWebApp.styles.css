@@ -26,7 +26,7 @@ body[b-l2lesdyyjl] {
 }
 
 /* Add rounded corners to the top left and the top right corner of the image */
-img[b-l2lesdyyjl] {
+.card-image[b-l2lesdyyjl] {
     border-radius: 5px 5px 0 0;
     object-fit: cover;
     max-height: 100px;
