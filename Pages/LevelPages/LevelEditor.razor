@@ -27,9 +27,19 @@
 
 
     <dialog @ref="dialogRef">
-        <h2>Hello Dialog</h2>
-        <p>This is an example of the HTML5 dialog element, which can be controlled using JavaScript and Blazor.</p>
-        <button @onclick="CloseDialog">Close Dialog</button>
+        <div>
+            <button @onclick="CloseDialog">Save</button>
+            <button style="float: right" @onclick="CloseDialog">Close</button>
+        </div>
+        <div >
+            <img style="display:inline" src="@ImageSource" />
+            <form style="display:inline" method="dialog">
+                <input type="text" value="@Prompt" />
+                <input type="text" value="@CorrectAnswer" />
+                <input type="text" value="@WrongAnswer1" />
+                <input type="text" value="@WrongAnswer2" />
+            </form>
+        </div>
     </dialog>
 
 
@@ -122,7 +132,7 @@
             {
                 int i = index;
 
-                <button @onclick="OpenDialog" style="border: none">
+                <button @onclick="@(e => OpenDialog(question))" class="card-button" style="border: none">
                     <div class="card">
                         <img src=@question.ImageSource alt="Avatar">
                         <div class="container">
@@ -247,7 +257,7 @@
 
     async Task EditQuestion()
     {
-    //
+        //
     }
 
     bool BuildQuestionMC()
@@ -308,16 +318,21 @@
                 await JS.InvokeVoidAsync("BlazorDialogReady");
                 await JS.InvokeVoidAsync("BlazorDialog.registerDialog", dialogRef);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
-
         }
     }
 
-    async Task OpenDialog()
+    async Task OpenDialog(Question question)
     {
+        CorrectAnswer = question.CorrectAnswer;
+        WrongAnswer1 = question.WrongAnswer1;
+        WrongAnswer2 = question.WrongAnswer2;
+        Prompt = question.Prompt;
+        ImageSource = question.ImageSource;
+
         await JS.InvokeVoidAsync("BlazorDialog.open", dialogRef);
     }
 
