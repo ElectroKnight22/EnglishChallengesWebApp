@@ -64,7 +64,10 @@ namespace EnglishChallengesWebApp.Resources.Model
             if (shouldNext)
             {
                 Score++;
-                QuestionNumber++;
+                if (QuestionList.Count != 0)
+                {
+                    QuestionNumber++;
+                }
             }
             Attempts++;
         }
