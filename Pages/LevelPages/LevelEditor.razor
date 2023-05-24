@@ -103,7 +103,14 @@
 
 
     <div>
-        <button class="btn btn-primary" @onclick="@(e => OpenDialog(null))">Add New</button>
+        @{
+            int n = 0;
+            foreach (Question question in QuestionList)
+            {
+                n++;
+            }
+        }
+        <button class="btn btn-primary" @onclick="@(e => OpenDialog(null))">Add New (@n)</button>
         <button class="btn btn-primary" @onclick="PlayLevel" style="margin:10px;">Play</button>
     </div>
     <div>

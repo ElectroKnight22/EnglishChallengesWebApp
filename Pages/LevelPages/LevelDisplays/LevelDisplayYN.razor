@@ -17,6 +17,9 @@
     <button disabled=@IsAnsweringDisabled @onclick='@(e => ChooseAnswer("False"))' style="margin:10px;">No</button>
 </div>
 <div style="display:flex; justify-content:center;">
+    <button class="btn btn-primary" id="NextBtn" disabled="@(!IsAnsweringDisabled)" @onclick="LoadNextQuestion" style="margin:10px;">NEXT</button>
+</div>
+<div style="display:flex; justify-content:center;">
     <button class="btn btn-primary" id="ResetBtn" @onclick="PromptReplay" style="margin:10px;">Reset Level</button>
 </div>
 

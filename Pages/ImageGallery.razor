@@ -65,6 +65,7 @@
             <option value="15">15</option>
             <option value="25">25</option>
             <option value="50">50</option>
+            <option value="200">200</option>
         </select>
         <label for="current-page">Current page:</label>
         <select name="current-page" @bind="@pageNumber">
@@ -95,14 +96,14 @@
             {
                 string fileName = file.Name ?? string.Empty;
                 string source = _CDNURL + fileName;
-                <p>
+                <div style="float:left">
                     @if (isDeleting)
                     {
                         <button class="btn btn-danger" style="margin:10px;" @onclick="() =>DeleteFile(fileName)">Delete</button>
                     }
-                    <img name="gallery-image" src=@source alt=@fileName height="100" style="margin:10px;">
-                    <label for="gallery-image">@fileName</label>
-                </p>
+                    <img name="gallery-image" src=@source alt=@fileName>
+                    <!--<label for="gallery-image">@fileName</label>-->
+                </div>
             }
         }
     }

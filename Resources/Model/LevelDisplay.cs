@@ -32,6 +32,7 @@ namespace EnglishChallengesWebApp.Resources.Model
                 AnswerTexts.Add("loading...");
             }
             await ResetLevel();
+            LoadNextQuestion();
         }
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -45,17 +46,10 @@ namespace EnglishChallengesWebApp.Resources.Model
         {
             UpdateLevelTitle();
             StateHasChanged();
-            if (shouldNext)
+            if (shouldNext && QuestionList.Count == 0)
             {
-                if (QuestionList.Count == 0)
-                {
-                    await PromptEnd();
-                }
-                else
-                {
-                    LoadNextQuestion();
-                    UpdateShownChoices();
-                }
+                await PromptEnd();
+
             }
             UpdateLevelTitle();
         }
@@ -108,12 +102,14 @@ namespace EnglishChallengesWebApp.Resources.Model
         }
         public void LoadNextQuestion()
         {
+            IsAnsweringDisabled = false;
             Random rnd = new();
             List<int> answerIndexes = new() { 0, 1, 2 };
             var shuffledIndex = answerIndexes.OrderBy(a => rnd.Next()).ToList();
 
             CurrentQuestion = QuestionList.First();
             QuestionList.Remove(CurrentQuestion);
+            UpdateShownChoices();
         }
         public virtual async Task ChooseAnswer(string choice)
         {
@@ -122,10 +118,10 @@ namespace EnglishChallengesWebApp.Resources.Model
             {
                 IsAnsweringDisabled = true;
                 isCorrect = choice == CurrentQuestion.CorrectAnswer;
+                if (!isCorrect) { IsAnsweringDisabled = false; };
                 await SpeakString(choice);
                 UpdateScore(isCorrect);
                 await Update(isCorrect);
-                IsAnsweringDisabled = false;
             }
         }
         public async void GiveHint()
@@ -150,7 +146,8 @@ namespace EnglishChallengesWebApp.Resources.Model
                   );
 
                 NavMan.NavigateTo($"Selecting/{LevelNumber}/{LevelType}");
-            } else
+            }
+            else
             {
                 await Update(true);
             }

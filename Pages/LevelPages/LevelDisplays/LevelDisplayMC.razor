@@ -17,6 +17,7 @@
     <button disabled=@IsAnsweringDisabled @onclick="() => ChooseAnswer(AnswerTexts[2])" style="margin:10px;">@AnswerTexts[2]</button>
 </div>
 <div style="display:flex; justify-content:center;">
+    <button class="btn btn-primary" id="NextBtn" disabled="@(!IsAnsweringDisabled)" @onclick="LoadNextQuestion" style="margin:10px;">NEXT</button>
     <button class="btn btn-primary" id="HintBtn" @onclick="GiveHint" style="margin:10px;">HINT</button>
 </div>
 <div style="display:flex; justify-content:center;">
