@@ -32,7 +32,6 @@ namespace EnglishChallengesWebApp.Resources.Model
                 AnswerTexts.Add("loading...");
             }
             await ResetLevel();
-            LoadNextQuestion();
         }
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -150,6 +149,7 @@ namespace EnglishChallengesWebApp.Resources.Model
             else
             {
                 await Update(true);
+                LoadNextQuestion();
             }
         }
         public async Task PromptReplay()
