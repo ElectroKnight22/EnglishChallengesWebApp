@@ -56,7 +56,8 @@
         <span>
             <input @bind="@SearchQuery" placeholder="search" />
             <button @onclick="() =>SearchFile(SearchQuery)">Search</button>
-            <button @onclick="ToggleDelete">@(isDeleting ? "Deleting" : "Delete")</button>
+            <button @onclick="ToggleSelecting">@(isSelecting ? "Selecting" : "Select")</button>
+            <button @onclick="DeleteFiles" hidden="@(selectedImages.Count() <= 0)">Delete Files</button>
         </span>
     </p>
     <p>
@@ -96,13 +97,12 @@
             {
                 string fileName = file.Name ?? string.Empty;
                 string source = _CDNURL + fileName;
-                <div style="float:left">
-                    @if (isDeleting)
+                <div class="image-container" style="float:left">
+                    @if (isSelecting)
                     {
-                        <button class="btn btn-danger" style="margin:10px;" @onclick="() =>DeleteFile(fileName)">Delete</button>
+                        <input class="select-btn" type="radio" checked="@(selectedImages.Contains(fileName))" @onclick="@( e=> ChangeSelection(fileName))" />
                     }
-                    <img name="gallery-image" src=@source alt=@fileName>
-                    <!--<label for="gallery-image">@fileName</label>-->
+                    <img class="gallery-image" src=@source alt=@fileName>
                 </div>
             }
         }
@@ -115,10 +115,32 @@
     static int pageNumber { get; set; } = 1;
     static int pageNumberNew { get; set; } = 1;
     static int skippedItems { get; set; } = 0;
-    bool isDeleting { get; set; } = false;
+    bool isSelecting { get; set; } = false;
+    List<string> selectedImages { get; set; } = new();
 
-    void ToggleDelete()
+    void ToggleSelecting()
     {
-        isDeleting = !isDeleting;
+        isSelecting = !isSelecting;
+        selectedImages.Clear();
+    }
+
+    void ChangeSelection(string fileName)
+    {
+        if (!selectedImages.Contains(fileName))
+        {
+            selectedImages.Add(fileName);
+        }
+        else
+        {
+            selectedImages.Remove(fileName);
+        }
+    }
+
+    async Task DeleteFiles()
+    {
+        foreach (string fileName in selectedImages)
+        {
+            await DeleteFile(fileName);
+        }
     }
 }

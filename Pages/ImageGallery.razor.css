@@ -1,6 +1,21 @@
-﻿img {
+﻿.image-container {
+    position: relative;
+    display: inline-block; /* Necessary to prevent container to take full width */
     width: 100px;
     height: 100px;
     margin: 0px;
     object-fit: cover;
+}
+
+    .image-container img {
+        width: 100%;
+        height:100%;
+        display: block;
+        object-fit:cover;
+    }
+
+.select-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
 }

@@ -22,6 +22,9 @@ namespace EnglishChallengesWebApp.Resources.Model
         protected bool IsUploading { get; set; } = false;
         protected bool IsLoading { get; set; } = false;
 
+        protected List<string> SelectedImages { get; set; } = new();
+        string selectedImage { get; set; } = string.Empty;
+
         protected string SearchQuery { get; set; } = string.Empty;
         protected override async Task OnInitializedAsync()
         {
