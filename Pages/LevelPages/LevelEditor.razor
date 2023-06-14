@@ -33,12 +33,12 @@
         </div>
         <div>
             <img class="dialog-image" src="@ImageSource" />
-            <form method="dialog">
-                <label for="prompt">Question Prompt</label>
+            <form class="question-params" method="dialog">
+                <label class="question-param-label" for="prompt">Question Prompt</label>
                 <input id="prompt" type="text" @bind="@Prompt" />
                 @if (LevelType == "yesno")
                 {
-                    <label for="ca">Correct Answer</label>
+                    <label class="question-param-label" for="ca">Correct Answer</label>
                     <select id="ca" name="true-false-answer" @bind="@IsTrueString">
                         <option value="True">yes</option>
                         <option value="False">no</option>
@@ -46,22 +46,21 @@
                 }
                 else
                 {
-                    <label for="ca">Correct Answer</label>
+                    <label class="question-param-label" for="ca">Correct Answer</label>
                     <input id="ca" type="text" @bind="@CorrectAnswer" />
-                    <label for="wa1">Wrong Answer 1</label>
+                    <label class="question-param-label" for="wa1">Wrong Answer 1</label>
                     <input id="wa1" type="text" @bind="@WrongAnswer1" />
-                    <label for="wa2">Wrong Answer 2</label>
+                    <label class="question-param-label" for="wa2">Wrong Answer 2</label>
                     <input id="wa2" type="text" @bind="@WrongAnswer2" />
                 }
             </form>
         </div>
-
         <!--file upload div-->
         <div>
             <p>
                 @if (LoadedFile == null)
                 {
-                    <label>Image link OR name in gallery:</label>
+                    <label class="question-param-label">Image link OR name in gallery:</label>
                     <input @bind="@ImageSource">
                     <label> or </label>
                 }
