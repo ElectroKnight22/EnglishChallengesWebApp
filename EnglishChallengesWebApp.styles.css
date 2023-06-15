@@ -32,6 +32,11 @@
 .image-details-btn[b-jk3vooagoy] {
     background-color: transparent;
 }
+
+.img-details[b-jk3vooagoy] {
+    display: flex;
+    flex-direction: column;
+}
 /* /Pages/LevelPages/LevelEditor.razor.rz.scp.css */
 body[b-l2lesdyyjl] {
 }
