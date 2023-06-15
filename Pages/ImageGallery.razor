@@ -2,6 +2,7 @@
 @using Newtonsoft.Json
 @using Supabase.Storage
 
+
 @inherits SupabaseClient
 
 @inject SweetAlertService Swal
@@ -91,13 +92,18 @@
             if (file.Name != ".emptyFolderPlaceholder")
             {
                 string fileName = file.Name ?? string.Empty;
+                string firstDate = file.CreatedAt.ToString() ?? string.Empty;
+                string lastDate = file.UpdatedAt.ToString() ?? string.Empty;
                 string source = _CDNURL + fileName;
                 <div class="image-container" style="float:left">
                     @if (isSelecting)
                     {
                         <input class="select-btn" type="radio" checked="@(selectedImages.Contains(fileName))" @onclick="@( e=> ChangeSelection(fileName))" />
                     }
-                    <img class="gallery-image" src=@source alt=@fileName>
+                    <button @onclick="@( e=> ImageClicked(fileName))" class="img-btn">
+                        <img class="gallery-image" src=@source alt=@fileName>
+                    </button>
+
                 </div>
             }
         }
@@ -136,6 +142,17 @@
         foreach (string fileName in selectedImages)
         {
             await DeleteFile(fileName);
+        }
+    }
+
+    void ImageClicked(string fileName)
+    {
+        if (isSelecting)
+        {
+            ChangeSelection(fileName);
+        } else
+        {
+            
         }
     }
 }

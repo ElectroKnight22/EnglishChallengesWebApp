@@ -7,15 +7,27 @@
     object-fit: cover;
 }
 
-    .image-container img {
-        width: 100%;
-        height:100%;
-        display: block;
-        object-fit:cover;
-    }
+.img-btn {
+    height: 100%;
+    width: 100%;
+    border: none;
+    display: block;
+    padding: 0;
+}
+
+.gallery-image {
+    height: 100%;
+    width: 100%;
+    display: block;
+    object-fit: cover;
+}
 
 .select-btn {
     position: absolute;
     top: 5px;
     right: 5px;
+}
+
+.image-details-btn {
+    background-color: transparent;
 }
