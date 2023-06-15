@@ -6,11 +6,43 @@
 @inherits SupabaseClient
 
 @inject SweetAlertService Swal
+@inject IJSRuntime JS
 
 @page "/Gallery"
 
 <h3>ImageGallery</h3>
 
+<dialog @ref="dialogRef">
+    <div class="img-details">
+        <span>
+            <label>
+                file name:
+            </label>
+            <label>
+                @(fileName)
+            </label>
+        </span>
+        <span>
+            <label>
+                creation date:
+            </label>
+            <label>
+                @(firstDate)
+            </label>
+        </span>
+        <span>
+            <label>
+                last modified:
+            </label>
+            <label>
+                @(lastDate)
+            </label>
+        </span>
+    </div>
+    <div>
+        <button style="float: right" @onclick="CloseDialog">Close</button>
+    </div>
+</dialog>
 <div>
     <div>
         @{
@@ -64,15 +96,13 @@
             if (file.Name != ".emptyFolderPlaceholder")
             {
                 string fileName = file.Name ?? string.Empty;
-                string firstDate = file.CreatedAt.ToString() ?? string.Empty;
-                string lastDate = file.UpdatedAt.ToString() ?? string.Empty;
                 string source = _CDNURL + fileName;
                 <div class="image-container" style="float:left">
                     @if (isSelecting)
                     {
-                        <input class="select-btn" type="radio" checked="@(selectedImages.Contains(fileName))" @onclick="@( e=> ChangeSelection(fileName))" />
+                        <input class="select-btn" type="radio" checked="@(selectedImages.Contains(fileName))" @onclick="@( e=> ChangeSelection(file))" />
                     }
-                    <button @onclick="@( e=> ImageClicked(fileName))" class="img-btn">
+                    <button @onclick="@( e=> ImageClicked(file))" class="img-btn">
                         <img class="gallery-image" src=@source alt=@fileName>
                     </button>
 
@@ -83,8 +113,12 @@
 </div>
 
 @code {
+    ElementReference dialogRef;
     bool isSelecting { get; set; } = false;
     List<string> selectedImages { get; set; } = new();
+    string fileName = string.Empty;
+    string firstDate = string.Empty;
+    string lastDate = string.Empty;
 
     void ToggleSelecting()
     {
@@ -92,8 +126,9 @@
         selectedImages.Clear();
     }
 
-    void ChangeSelection(string fileName)
+    void ChangeSelection(FileObject file)
     {
+        string fileName = file.Name ?? string.Empty;
         if (!selectedImages.Contains(fileName))
         {
             selectedImages.Add(fileName);
@@ -112,14 +147,35 @@
         }
     }
 
-    void ImageClicked(string fileName)
+    async Task ImageClicked(FileObject file)
     {
         if (isSelecting)
         {
-            ChangeSelection(fileName);
-        } else
-        {
-            
+            ChangeSelection(file);
         }
+        else
+        {
+            await OpenDialog(file);
+        }
+    }
+
+    async Task OpenDialog(FileObject file)
+    {
+        if (file != null)
+        {
+            fileName = file.Name ?? string.Empty;
+            firstDate = file.CreatedAt.ToString() ?? string.Empty;
+            lastDate = file.UpdatedAt.ToString() ?? string.Empty;
+        }
+
+        await JS.InvokeVoidAsync("BlazorDialog.open", dialogRef);
+    }
+
+    async Task CloseDialog()
+    {
+        fileName = string.Empty;
+        firstDate = string.Empty;
+        lastDate = string.Empty;
+        await JS.InvokeVoidAsync("BlazorDialog.close", dialogRef);
     }
 }

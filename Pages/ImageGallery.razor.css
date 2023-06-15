@@ -31,3 +31,8 @@
 .image-details-btn {
     background-color: transparent;
 }
+
+.img-details {
+    display: flex;
+    flex-direction: column;
+}
