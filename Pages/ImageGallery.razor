@@ -56,38 +56,10 @@
             <button @onclick="DeleteFiles" hidden="@(selectedImages.Count() <= 0)">Delete Files</button>
         </span>
     </p>
-    <p>
-        <label for="items-per-page">Items per page:</label>
-        <select name="items-per-page" @bind="@itemsPerPage">
-            <option value="15">15</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="200">200</option>
-        </select>
-        <label for="current-page">Current page:</label>
-        <select name="current-page" @bind="@pageNumber">
-            @{
-                int totalPages = (int)Math.Ceiling((decimal)DatabaseFiles.Count() / itemsPerPage);
-
-                int page = 1;
-                for (int i = 0; i < totalPages; i++)
-                {
-                    int currentPage = page;
-                    <option value="@currentPage">@currentPage</option>
-
-                    page++;
-                }
-            }
-        </select>
-
-    </p>
-
-
 </div>
 <div>
     @{
-        skippedItems = itemsPerPage * (pageNumber - 1);
-        foreach (FileObject file in DatabaseFiles.Skip(skippedItems).Take(itemsPerPage).ToList())
+        foreach (FileObject file in DatabaseFiles.ToList())
         {
             if (file.Name != ".emptyFolderPlaceholder")
             {
@@ -111,11 +83,6 @@
 </div>
 
 @code {
-    static int itemsPerPage { get; set; } = 15;
-    static int itemsPerPageNew { get; set; } = 15;
-    static int pageNumber { get; set; } = 1;
-    static int pageNumberNew { get; set; } = 1;
-    static int skippedItems { get; set; } = 0;
     bool isSelecting { get; set; } = false;
     List<string> selectedImages { get; set; } = new();
 
