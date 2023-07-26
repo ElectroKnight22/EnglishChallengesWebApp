@@ -56,7 +56,7 @@ body[b-l2lesdyyjl] {
     transition: 0.3s;
     border-radius: 5px; /* 5px rounded corners */
     width: 200px;
-    height: 200px;
+    height: 300px;
     float: left;
 }
 
@@ -84,7 +84,7 @@ body[b-l2lesdyyjl] {
     border-radius: 5px 5px 0 0;
     object-fit: cover;
     max-height: 100%;
-    height: 100px;
+    height: 200px;
     min-width: 100%;
 }
 
