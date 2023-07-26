@@ -25,14 +25,22 @@
     </AuthorizeView>
 
 
-    <dialog @ref="dialogRef">
+    <dialog @ref="editDialogRef">
         <div>
             <input type="submit" value="Save" @onclick="@(isEditing? UpdateQuestion : AddQuestion)" />
             <button @onclick="RemoveQuestion">Delete</button>
-            <button style="float: right" @onclick="CloseDialog">Close</button>
+            <button style="float: right" @onclick="e => CloseDialog(editDialogRef)">Close</button>
         </div>
+
+        <!--question details div-->
         <div>
-            <img class="dialog-image" src="@ImageSource" />
+            @if (string.IsNullOrEmpty(ImageSource))
+            {
+                ImageSource = "images/Placeholder_view_vector.svg.png";
+            }
+            <button class="dialog-image-button" @onclick="e => OpenDialog(null, uploadDialogRef)">
+                <img class="dialog-image" src="@ImageSource" />
+            </button>
             <form class="question-params" method="dialog">
                 <label class="question-param-label" for="prompt">Question Prompt</label>
                 <input id="prompt" type="text" @bind="@Prompt" />
@@ -55,51 +63,26 @@
                 }
             </form>
         </div>
+    </dialog>
+
+
+    <dialog @ref="uploadDialogRef">
         <!--file upload div-->
         <div>
-            <p>
-                @if (LoadedFile == null)
+            @{
+                var parameters = new
                 {
-                    <label class="question-param-label">Image link OR name in gallery:</label>
-                    <input @bind="@ImageSource">
-                    <label> or </label>
-                }
+                    PickMode = true,
+                };
+                var attributes = parameters.GetType().GetProperties()
+                .Select(p => new KeyValuePair<string, object?>(p.Name, p.GetValue(parameters, null)))
+                .ToArray();
 
-                @*Image uploader*@
-                <div>
-                    @if (string.IsNullOrEmpty(ImageSource))
-                    {
-                        <p>
-                            <label>
-                                Upload an image up to @(allowFileSizeKB) KB:
-                                <InputFile OnChange="@LoadFile" accept="image/*" multiple />
-                            </label>
-                            @if (LoadedFile != null)
-                            {
-                                <button @onclick="CancelUpload">@(IsUploading ? "Uploading..." : "Cancel")</button>
-                            }
-                        </p>
-
-                        if (IsLoading)
-                        {
-                            <p>Uploading...</p>
-                        }
-                        else if (LoadedFile != null)
-                        {
-                            string textColorString = "color:#000000";
-                            if (FileTooLarge) { textColorString = "color:#FF0000"; }
-                            <ul>
-                                <li>Name: @LoadedFile.Name</li>
-                                <li style=@textColorString>Size (KB): @(Math.Ceiling((decimal)LoadedFile.Size / 1024))</li>
-                            </ul>
-                        }
-                    }
-                </div>
-            </p>
+                <ImageGallery @attributes=attributes OnNotify="SetQuestionImageFromGallery" />
+            }
 
         </div>
     </dialog>
-
 
     <div>
         @{
@@ -109,7 +92,7 @@
                 n++;
             }
         }
-        <button class="btn btn-primary" @onclick="@(e => OpenDialog(null))">Add New (@n)</button>
+        <button class="btn btn-primary" @onclick="@(e => OpenDialog(null, editDialogRef))">Add New (@n)</button>
         <button class="btn btn-primary" @onclick="PlayLevel" style="margin:10px;">Play</button>
     </div>
     <div>
@@ -119,11 +102,11 @@
             {
                 int i = index;
 
-                <button @onclick="@(e => OpenDialog(question))" class="card-button" style="border: none">
+                <button @onclick="@(e => SelectQuestion(question))" class="card-button" style="border: none">
                     <div class="card">
                         <img class="card-image" src=@question.ImageSource alt="image missing">
-                        <div class="container">
-                            <p>@question.Prompt</p>
+                        <div class="question-container">
+                            <div class="question-prompt">@question.Prompt</div>
                             <p>@question.CorrectAnswer</p>
                         </div>
                     </div>
@@ -136,8 +119,8 @@
 
 
 @code {
-    ElementReference dialogRef;
-
+    ElementReference editDialogRef;
+    ElementReference uploadDialogRef;
 
     bool isEditing { get; set; } = false;
 
@@ -151,6 +134,7 @@
 
 
     Question question = new();
+    Question currentQuestion = new();
 
 
     protected override async Task OnInitializedAsync()
@@ -160,9 +144,26 @@
         await LoadQuestionSet();
     }
 
+    async Task SelectQuestion(Question question)
+    {
+        currentQuestion = question;
+        await OpenDialog(question, editDialogRef);
+    }
+
     private void PlayLevel()
     {
         NavMan.NavigateTo($"Playing/{LevelNumber}/{LevelType}/{QuestionSetId}/");
+    }
+
+
+    async Task SetQuestionImageFromGallery(string fileName)
+    {
+        await CloseDialog(uploadDialogRef);
+        ImageSource = _CDNURL + fileName;
+        currentQuestion.ImageSource = ImageSource;
+        await CloseDialog(editDialogRef);
+        await OpenDialog(currentQuestion, editDialogRef);
+        await UpdateQuestion();
     }
 
 
@@ -170,12 +171,12 @@
     {
         if (FileTooLarge)
         {
-            await CloseDialog();
+            await CloseDialog(editDialogRef);
             await Swal.FireAsync(new SweetAlertOptions
                 {
                     Icon = "error",
                     Title = "Image too large!",
-                    Text = "You have exceeded the maximum image size. Please upload an image smaller than 1.5mb.",
+                    Text = "You have exceeded the maximum image size. Please upload a smaller image.",
                 });
             return false;
         }
@@ -220,13 +221,10 @@
 
             return true;
 
-
-
         }
         else
         {
             return false;
-            await CloseDialog();
             await Swal.FireAsync(new SweetAlertOptions
                 {
                     Icon = "error",
@@ -244,7 +242,7 @@
             await UpdateQuestionSet();
             await LoadQuestionSet();
         }
-        await CloseDialog();
+        await CloseDialog(editDialogRef);
     }
 
 
@@ -262,7 +260,7 @@
             await UpdateQuestionSet();
             await LoadQuestionSet();
         }
-       await CloseDialog();
+        await CloseDialog(editDialogRef);
     }
 
     bool BuildAnswerMC()
@@ -290,7 +288,7 @@
     {
         Question question = new() { Guid = guid, };
         QuestionHashSet.Remove(question);
-        await CloseDialog();
+        await CloseDialog(editDialogRef);
         await UpdateQuestionSet();
         await LoadQuestionSet();
     }
@@ -304,6 +302,7 @@
     }
     void ClearInputs()
     {
+        isEditing = false;
         CorrectAnswer = string.Empty;
         WrongAnswer1 = string.Empty;
         WrongAnswer2 = string.Empty;
@@ -320,7 +319,8 @@
             try
             {
                 await JS.InvokeVoidAsync("BlazorDialogReady");
-                await JS.InvokeVoidAsync("BlazorDialog.registerDialog", dialogRef);
+                await JS.InvokeVoidAsync("BlazorDialog.registerDialog", editDialogRef);
+                await JS.InvokeVoidAsync("BlazorDialog.registerDialog", uploadDialogRef);
             }
             catch (Exception ex)
             {
@@ -329,7 +329,7 @@
         }
     }
 
-    async Task OpenDialog(Question? question)
+    async Task OpenDialog(Question? question, ElementReference dialogRef)
     {
         if (question != null)
         {
@@ -345,7 +345,7 @@
         await JS.InvokeVoidAsync("BlazorDialog.open", dialogRef);
     }
 
-    async Task CloseDialog()
+    async Task CloseDialog(ElementReference dialogRef)
     {
         isEditing = false;
         ClearInputs();

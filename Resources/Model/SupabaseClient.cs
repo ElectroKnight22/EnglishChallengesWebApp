@@ -15,7 +15,7 @@ namespace EnglishChallengesWebApp.Resources.Model
         protected List<IBrowserFile> LoadedFiles = new();
         protected IBrowserFile? LoadedFile { get; set; }
 
-        protected const long allowFileSizeKB = 1500;
+        protected const long allowFileSizeKB = 15000000000;
         protected long maxFileSize = 1024 * allowFileSizeKB;
         protected int maxAllowedFiles = 0; // 0 means unlimited
         protected bool FileTooLarge {get; set;} = false;
@@ -123,6 +123,7 @@ namespace EnglishChallengesWebApp.Resources.Model
         {
             LoadedFile = null;
             LoadedFiles.Clear();
+            StateHasChanged();
         }
 
         protected async Task DeleteFile(string fileName)

@@ -12,6 +12,14 @@
 
 <h3>ImageGallery</h3>
 
+@if (PickMode == true)
+{
+    <h3>
+        This is in pick mode.
+    </h3>
+}
+
+
 <dialog @ref="dialogRef">
     <div class="img-details">
         <img class="dialog-image" src="@fileSource" />
@@ -49,9 +57,9 @@
         @{
             <p>
                 <label>
-                    Upload @(maxAllowedFiles == 0 ? "" : $"up to {maxAllowedFiles} ")images up to @(allowFileSizeKB) KB each:
-                    <InputFile OnChange="@LoadFilesMulti" accept="image/*" multiple />
+                    Upload a file:
                 </label>
+                <InputFile OnChange="@LoadFilesMulti" accept="image/*" multiple />
                 @if (LoadedFiles.Any())
                 {
                     <button @onclick="UploadFileMulti">@(IsUploading ? "Uploading..." : "Upload")</button>
@@ -85,8 +93,11 @@
         <span>
             <input @bind="@SearchQuery" placeholder="search" />
             <button @onclick="() =>SearchFile(SearchQuery)">Search</button>
-            <button @onclick="ToggleSelecting">@(isSelecting ? "Selecting" : "Select")</button>
-            <button @onclick="DeleteFiles" hidden="@(selectedImages.Count() <= 0)">Delete Files</button>
+            @if (PickMode == false)
+            {
+                <button @onclick="ToggleSelecting">@(isSelecting ? "Cancel" : "Select")</button>
+                <button @onclick="DeleteFiles" hidden="@(selectedImages.Count() <= 0)">Delete Files</button>
+            }
         </span>
     </p>
 </div>
@@ -104,7 +115,7 @@
                         <input class="select-btn" type="radio" checked="@(selectedImages.Contains(fileName))" @onclick="@( e=> ChangeSelection(file))" />
                     }
                     <button @onclick="@( e=> ImageClicked(file))" class="img-btn">
-                        <img class="gallery-image" src=@source alt=@fileName>
+                            <img class="gallery-image" src=@source alt=@fileName> : 
                     </button>
 
                 </div>
@@ -114,6 +125,10 @@
 </div>
 
 @code {
+    [Parameter]
+    public bool PickMode { get; set; }
+    [Parameter]
+    public EventCallback<string> OnNotify { get; set; }
     ElementReference dialogRef;
     bool isSelecting { get; set; } = false;
     List<string> selectedImages { get; set; } = new();
@@ -121,6 +136,11 @@
     string firstDate = string.Empty;
     string lastDate = string.Empty;
     string fileSource = string.Empty;
+
+    private async Task NotifyParentComponent(string fileName)
+    {
+        await OnNotify.InvokeAsync(fileName);
+    }
 
     void ToggleSelecting()
     {
@@ -151,13 +171,20 @@
 
     async Task ImageClicked(FileObject file)
     {
-        if (isSelecting)
+        if(PickMode)
         {
-            ChangeSelection(file);
-        }
-        else
+            string fileName = file.Name ?? string.Empty;
+            await NotifyParentComponent(fileName);
+        } else
         {
-            await OpenDialog(file);
+            if (isSelecting)
+            {
+                ChangeSelection(file);
+            }
+            else
+            {
+                await OpenDialog(file);
+            }
         }
     }
 
