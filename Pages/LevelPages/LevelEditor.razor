@@ -94,7 +94,7 @@
                 n++;
             }
         }
-        <button class="btn btn-primary" @onclick="@(e => OpenDialog(null, editDialogRef))">Add New (@n)</button>
+        <button class="btn btn-primary" @onclick="@(e => StartNewQuestion())">Add New (@n)</button>
         <button class="btn btn-primary" @onclick="PlayLevel" style="margin:10px;">Play</button>
     </div>
     <div>
@@ -143,6 +143,12 @@
         QuestionHashSet = new();
         await RetrieveAllFiles();
         await LoadQuestionSet();
+    }
+
+    async Task StartNewQuestion()
+    {
+        this.question = new();
+        await OpenDialog(null, editDialogRef);
     }
 
     async Task SelectQuestion(Question question)
@@ -334,10 +340,6 @@
             Prompt = question.Prompt;
             ImageSource = question.ImageSource;
             guid = question.Guid;
-        }
-        else
-        {
-            this.question = new();
         }
 
         await JS.InvokeVoidAsync("BlazorDialog.open", dialogRef);
