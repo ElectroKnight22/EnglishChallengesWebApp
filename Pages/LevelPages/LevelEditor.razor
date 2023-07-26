@@ -136,7 +136,6 @@
 
 
     Question question = new();
-    Question currentQuestion = new();
 
 
     protected override async Task OnInitializedAsync()
@@ -148,7 +147,7 @@
 
     async Task SelectQuestion(Question question)
     {
-        currentQuestion = question;
+        this.question = question;
         await OpenDialog(question, editDialogRef);
     }
 
@@ -160,12 +159,11 @@
 
     async Task SetQuestionImageFromGallery(string fileName)
     {
-        await CloseDialog(uploadDialogRef);
         ImageSource = _CDNURL + fileName;
-        currentQuestion.ImageSource = ImageSource;
+        question.ImageSource = ImageSource;
+        await CloseDialog(uploadDialogRef);
         await CloseDialog(editDialogRef);
-        await OpenDialog(currentQuestion, editDialogRef);
-        await UpdateQuestion();
+        await OpenDialog(question, editDialogRef);
     }
 
 
@@ -227,12 +225,6 @@
         else
         {
             return false;
-            await Swal.FireAsync(new SweetAlertOptions
-                {
-                    Icon = "error",
-                    Title = "Oops...",
-                    Text = "It seems like you have not entered an answer for your new question.",
-                });
         }
     }
 
@@ -244,7 +236,7 @@
             await UpdateQuestionSet();
             await LoadQuestionSet();
         }
-        await CloseDialog(editDialogRef);
+
     }
 
 
@@ -342,6 +334,10 @@
             Prompt = question.Prompt;
             ImageSource = question.ImageSource;
             guid = question.Guid;
+        }
+        else
+        {
+            this.question = new();
         }
 
         await JS.InvokeVoidAsync("BlazorDialog.open", dialogRef);
