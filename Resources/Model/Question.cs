@@ -7,7 +7,7 @@ namespace EnglishChallengesWebApp.Resources.Model
         public string CorrectAnswer { get; set; } = string.Empty;
         public string WrongAnswer1 { get; set; } = string.Empty;
         public string WrongAnswer2 { get; set; } = string.Empty;
-        public string Prompt { get; set; } = "Please choose the best answer";
+        public string Prompt { get; set; } = string.Empty;
         public string ImageSource { get; set; } = string.Empty;
         public Guid Guid { get; set; } = Guid.Empty;
 
