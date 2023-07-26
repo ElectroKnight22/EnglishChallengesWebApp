@@ -34,12 +34,14 @@
 
         <!--question details div-->
         <div>
+
             @if (string.IsNullOrEmpty(ImageSource))
             {
                 ImageSource = "images/Placeholder_view_vector.svg.png";
             }
             <button class="dialog-image-button" @onclick="e => OpenDialog(null, uploadDialogRef)">
                 <img class="dialog-image" src="@ImageSource" />
+                <img class="click-hint-img" src="images/click-2384.svg" />
             </button>
             <form class="question-params" method="dialog">
                 <label class="question-param-label" for="prompt">Question Prompt</label>
