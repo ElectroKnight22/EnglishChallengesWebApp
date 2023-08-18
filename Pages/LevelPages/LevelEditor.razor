@@ -167,8 +167,11 @@
 
     async Task SetQuestionImageFromGallery(string fileName)
     {
-        ImageSource = _CDNURL + fileName;
-        question.ImageSource = ImageSource;
+        if (!String.IsNullOrEmpty(fileName))
+        {
+            ImageSource = _CDNURL + fileName;
+            question.ImageSource = ImageSource;
+        }
         await CloseDialog(uploadDialogRef);
         await CloseDialog(editDialogRef);
         await OpenDialog(question, editDialogRef);

@@ -14,7 +14,7 @@
 @if (PickMode == true)
 {
     <div>
-        <button style="float: right" @onclick="CloseDialog">Close</button>
+        <button style="float: right" @onclick="@( e=> NotifyParentComponent(string.Empty))">Close</button>
     </div>
 }
 
