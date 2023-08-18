@@ -10,7 +10,14 @@
 
 @page "/Gallery"
 
-<h3>ImageGallery</h3>
+
+@if (PickMode == true)
+{
+    <div>
+        <button style="float: right" @onclick="CloseDialog">Close</button>
+    </div>
+}
+
 
 
 <dialog @ref="dialogRef">
