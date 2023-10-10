@@ -216,7 +216,6 @@
                 await DeleteFolderContent(currentId);
             }
 
-
             await supabase.From<Folder>().Where(x => x.ParentFolderId == currentFolderId).Delete();
             await supabase.From<QuestionSet>().Where(x => x.ParentFolderId == currentFolderId).Delete();
         }
