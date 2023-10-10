@@ -1,10 +1,11 @@
 ﻿@using EnglishChallengesWebApp.Resources.Model
+@using Newtonsoft.Json.Linq;
 
 @inject Client supabase
 @inject SweetAlertService Swal
 @inject NavigationManager NavMan
 
-@page "/Selecting/{LevelNumber:int}/{*LevelType}"
+@page "/Selecting/{FolderId:int}/{LevelNumber:int}/{*LevelType}/"
 
 <h3>Level</h3>
 
@@ -20,13 +21,28 @@
         //    </Authorized>
         //</AuthorizeView>
 
+        <button class="btn btn-primary" @onclick="AddFolder" style="margin:10px;">New Folder <span class="oi oi-plus"></span></button>
         <button class="btn btn-primary" @onclick="AddQuestionSet" style="margin:10px;">New <span class="oi oi-plus"></span></button>
         <button class="btn btn-primary" @onclick="ToggleDelete" style="margin:10px;">Delete <span class="oi oi-trash"></span></button>
 
 
+        foreach(Folder folder in Folders)
+        {
+            if (folder.LevelNumber == LevelNumber && folder.LevelType == LevelType && folder.ParentFolderId == FolderId)
+            {
+                <div>
+                    @if (isDeleting)
+                    {
+                        <button class="btn btn-danger" style="margin:10px;" @onclick="() =>RemoveFolder(folder)">Delete</button>
+                    }
+                    <button class="btn btn-outline-primary" style="margin:10px;" @onclick="() => OpenFolder(folder)">@folder.Name</button>
+                </div>
+            }
+        }
+
         foreach (QuestionSet questionSet in QuestionSets)
         {
-            if (questionSet.LevelNumber == LevelNumber && questionSet.LevelType == LevelType)
+            if (questionSet.LevelNumber == LevelNumber && questionSet.LevelType == LevelType && questionSet.ParentFolderId == FolderId)
             {
                 <div>
                     @if (isDeleting)
@@ -45,23 +61,39 @@
     public int LevelNumber { get; set; }
     [ParameterAttribute]
     public string LevelType { get; set; } = string.Empty;
+    [Parameter]
+    public int FolderId { get; set; } = 0;
     bool isDeleting { get; set; } = false;
     List<QuestionSet> QuestionSets { get; set; } = new();
+    List<Folder> Folders { get; set; } = new();
 
     private bool isStudent { get; set; } = false;
+
+
     protected override async Task OnInitializedAsync()
     {
         await LoadQuestionSets();
+        await LoadFolders();
     }
     async Task LoadQuestionSets()
     {
         var result = await supabase.From<QuestionSet>().Get();
         QuestionSets = result.Models;
     }
+
+    async Task LoadFolders()
+    {
+        var result = await supabase.From<Folder>().Get();
+        Folders = result.Models;
+    }
+
+
+
+
     void OpenQuestionSet(QuestionSet questionSet)
     {
         string place = isStudent ? "Playing" : "Editing";
-        NavMan.NavigateTo($"{place}/{LevelNumber}/{LevelType}/{questionSet.Id}/");
+        NavMan.NavigateTo($"{place}/{LevelNumber}/{LevelType}/{FolderId}/{questionSet.Id}/");
     }
     void ToggleDelete()
     {
@@ -83,6 +115,7 @@
             var questionSet = new QuestionSet
                 {
                     Name = result.Value,
+                    ParentFolderId = this.FolderId,
                     LevelNumber = this.LevelNumber,
                     LevelType = this.LevelType,
                 };
@@ -116,4 +149,83 @@
                 });
         }
     }
+
+
+    async Task AddFolder()
+    {
+        SweetAlertResult result = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Enter a name for your new folder",
+                Input = "text",
+                InputPlaceholder = "Name",
+                ShowCancelButton = true,
+                InputValidator = new InputValidatorCallback((string input) => input.Length == 0 ? "Please enter a name." : null, this),
+            });
+
+        if (!string.IsNullOrEmpty(result.Value))
+        {
+            var folder = new Folder
+                {
+                    Name = result.Value,
+                    ParentFolderId = this.FolderId,
+                    LevelNumber = this.LevelNumber,
+                    LevelType = this.LevelType,
+                };
+            await supabase.From<Folder>().Insert(folder);
+            await LoadFolders();
+        }
+    }
+
+    async Task RemoveFolder(Folder folder)
+    {
+        SweetAlertResult result = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Are you sure?",
+                Text = "You won't be able to revert this!",
+                Icon = "warning",
+                ShowCancelButton = true,
+                ConfirmButtonColor = "#3085d6",
+                CancelButtonColor = "#d33",
+                ConfirmButtonText = "Yes, delete it!"
+            });
+
+        if (!string.IsNullOrEmpty(result.Value))
+        {
+            await DeleteFolderContent(folder.Id);
+            await supabase.From<Folder>().Where(x => x.Id == folder.Id).Delete();
+            await LoadFolders();
+            await LoadQuestionSets();
+
+            SweetAlertResult newResult = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Deleted!",
+                    Text = "Question set has been deleted.",
+                    Icon = "success",
+                });
+        }
+
+        async Task DeleteFolderContent(int currentFolderId) // TODO: make this recursive all the way down
+        {
+            var innerFolders = await supabase.From<Folder>().Where(x => x.ParentFolderId == currentFolderId).Get();
+            var innerQuestionSets = await supabase.From<QuestionSet>().Where(x => x.ParentFolderId == currentFolderId).Get();
+
+            var jsonArrayFolders = JArray.Parse(innerFolders.Content);
+            foreach (var item in jsonArrayFolders)
+            {
+                int currentId = item["id"].Value<int>();
+                await DeleteFolderContent(currentId);
+            }
+
+
+            await supabase.From<Folder>().Where(x => x.ParentFolderId == currentFolderId).Delete();
+            await supabase.From<QuestionSet>().Where(x => x.ParentFolderId == currentFolderId).Delete();
+        }
+    }
+
+    void OpenFolder(Folder folder)
+    {
+        string place = "Selecting";
+        NavMan.NavigateTo($"{place}/{folder.Id}/{LevelNumber}/{LevelType}/");
+    }
+
 }

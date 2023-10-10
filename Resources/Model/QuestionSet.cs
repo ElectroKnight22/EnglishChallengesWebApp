@@ -9,6 +9,7 @@ namespace EnglishChallengesWebApp.Resources.Model
     {
         [PrimaryKey("id", false)] public int Id { get; set; }
         [Column("name")] public string Name { get; set; } = string.Empty;
+        [Column("parent_id")] public int ParentFolderId { get; set; } = 0;
         [Column("level_type")] public string LevelType { get; set; } = string.Empty;
         [Column("level_number")] public int LevelNumber { get; set; } = 0;
         [Column("is_published")] public bool IsPublished { get; set; } = false;

@@ -226,11 +226,12 @@
 
     private void ChooseType(OpenedLevel level, NavType type)
     {
+        int folderId = 0;
         string levelNum = level.navLevel.ToString();
         string levelType = type.ToString();
 
         isNavMenuCollapsed = true;
 
-        NavMan.NavigateTo($"Selecting/{levelNum}/{levelType}");
+        NavMan.NavigateTo($"Selecting/{folderId}/{levelNum}/{levelType}");
     }
 }
