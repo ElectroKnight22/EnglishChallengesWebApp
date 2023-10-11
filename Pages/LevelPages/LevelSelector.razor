@@ -204,11 +204,9 @@
                 });
         }
 
-        async Task DeleteFolderContent(int currentFolderId) // TODO: make this recursive all the way down
+        async Task DeleteFolderContent(int currentFolderId)
         {
             var innerFolders = await supabase.From<Folder>().Where(x => x.ParentFolderId == currentFolderId).Get();
-            var innerQuestionSets = await supabase.From<QuestionSet>().Where(x => x.ParentFolderId == currentFolderId).Get();
-
             var jsonArrayFolders = JArray.Parse(innerFolders.Content);
             foreach (var item in jsonArrayFolders)
             {
