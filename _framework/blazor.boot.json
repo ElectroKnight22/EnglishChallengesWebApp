@@ -11,7 +11,7 @@
   "resources": {
     "assembly": {
       "CurrieTechnologies.Razor.SweetAlert2.dll": "sha256-jaHzMzp157atLBDyTfDX4LuHLGBZ1q\/5g\/2s83upTCk=",
-      "EnglishChallengesWebApp.dll": "sha256-gdu4hgLRWTcv+cZ9WR9pIPoa73D7HFYDtHhvRn3H7qs=",
+      "EnglishChallengesWebApp.dll": "sha256-OmPKYQwA5na7zfrGAU0+sIskZ+LPBih+8APyUpHX\/8g=",
       "Microsoft.AspNetCore.Authorization.dll": "sha256-I9BNNNz69YSLFUasEWy8BiRw5SBJ3+fANzAAjw6r1mo=",
       "Microsoft.AspNetCore.Components.Authorization.dll": "sha256-T6gDk81V5MkJ1HmEBYibmvhmprqEJMEG26hTr5TUF3w=",
       "Microsoft.AspNetCore.Components.dll": "sha256-vyXJPOoae8sFBIg0u6LacS7yFmRkCAVm5QTJW1rTaq4=",
