@@ -11,7 +11,7 @@
 
 <body>
     @{
-            //<AuthorizeView>
+        //<AuthorizeView>
         //    <Authorized>
         //        <button class="btn btn-primary" @onclick="ToggleEdit" style="margin:10px;">@(isEditing ? "Editing" : "Playing")</button>
         //        if (isEditing)
@@ -21,12 +21,13 @@
         //    </Authorized>
         //</AuthorizeView>
 
-        <button class="btn btn-primary" @onclick="AddFolder" style="margin:10px;">New Folder <span class="oi oi-plus"></span></button>
-        <button class="btn btn-primary" @onclick="AddQuestionSet" style="margin:10px;">New <span class="oi oi-plus"></span></button>
-        <button class="btn btn-primary" @onclick="ToggleDelete" style="margin:10px;">Delete <span class="oi oi-trash"></span></button>
+        <div>
+            <button class="btn btn-primary" @onclick="AddFolder" style="margin:10px;">New Folder <span class="oi oi-plus"></span></button>
+            <button class="btn btn-primary" @onclick="AddQuestionSet" style="margin:10px;">New <span class="oi oi-plus"></span></button>
+            <button class="btn btn-primary" @onclick="ToggleDelete" style="margin:10px;">Delete <span class="oi oi-trash"></span></button>
+        </div>
 
-
-        foreach(Folder folder in Folders)
+        foreach (Folder folder in Folders)
         {
             if (folder.LevelNumber == LevelNumber && folder.LevelType == LevelType && folder.ParentFolderId == FolderId)
             {
@@ -93,7 +94,7 @@
     void OpenQuestionSet(QuestionSet questionSet)
     {
         string place = isStudent ? "Playing" : "Editing";
-        NavMan.NavigateTo($"{place}/{LevelNumber}/{LevelType}/{FolderId}/{questionSet.Id}/");
+        NavMan.NavigateTo($"{place}/{LevelNumber}/{LevelType}/{questionSet.Id}/");
     }
     void ToggleDelete()
     {
@@ -181,7 +182,7 @@
         SweetAlertResult result = await Swal.FireAsync(new SweetAlertOptions
             {
                 Title = "Are you sure?",
-                Text = "You won't be able to revert this!",
+                Text = "The folder and all of its content will be deleted.",
                 Icon = "warning",
                 ShowCancelButton = true,
                 ConfirmButtonColor = "#3085d6",
@@ -199,7 +200,7 @@
             SweetAlertResult newResult = await Swal.FireAsync(new SweetAlertOptions
                 {
                     Title = "Deleted!",
-                    Text = "Question set has been deleted.",
+                    Text = "Folder and all content has been deleted.",
                     Icon = "success",
                 });
         }
