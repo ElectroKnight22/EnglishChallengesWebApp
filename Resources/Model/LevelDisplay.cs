@@ -144,7 +144,7 @@ namespace EnglishChallengesWebApp.Resources.Model
                   SweetAlertIcon.Error
                   );
 
-                NavMan.NavigateTo($"Selecting/{LevelNumber}/{LevelType}");
+                NavMan.NavigateTo($"Selecting/{FolderId}/{LevelNumber}/{LevelType}");
             }
             else
             {
@@ -174,7 +174,7 @@ namespace EnglishChallengesWebApp.Resources.Model
             }
             else
             {
-                NavMan.NavigateTo($"Selecting/{LevelNumber}/{LevelType}");
+                NavMan.NavigateTo($"Selecting/{FolderId}/{LevelNumber}/{LevelType}");
             }
         }
 

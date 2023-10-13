@@ -10,6 +10,8 @@ namespace EnglishChallengesWebApp.Resources.Model
         protected SweetAlertService Swal { get; set; } = default!;
 
         [Parameter]
+        public int FolderId { get; set; }
+        [Parameter]
         public int LevelNumber { get; set; }
         [Parameter]
         public string LevelType { get; set; } = string.Empty;

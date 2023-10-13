@@ -94,7 +94,7 @@
     void OpenQuestionSet(QuestionSet questionSet)
     {
         string place = isStudent ? "Playing" : "Editing";
-        NavMan.NavigateTo($"{place}/{LevelNumber}/{LevelType}/{questionSet.Id}/");
+        NavMan.NavigateTo($"{place}/{FolderId}/{LevelNumber}/{LevelType}/{questionSet.Id}/");
     }
     void ToggleDelete()
     {

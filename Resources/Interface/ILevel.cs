@@ -4,6 +4,7 @@ namespace EnglishChallengesWebApp.Resources.Interface
 {
     public interface ILevel
     {
+        int FolderId { get; }
         int LevelNumber { get; }
         string LevelType { get; }
         int QuestionSetId { get; set; }

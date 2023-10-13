@@ -5,7 +5,7 @@
 
 @inherits Level
 
-@page "/Editing/{LevelNumber:int}/{LevelType}/{QuestionSetId:int}"
+@page "/Editing/{FolderId:int}/{LevelNumber:int}/{LevelType}/{QuestionSetId:int}"
 
 
 @*@attribute [Authorize]*@
@@ -161,7 +161,7 @@
 
     private void PlayLevel()
     {
-        NavMan.NavigateTo($"Playing/{LevelNumber}/{LevelType}/{QuestionSetId}/");
+        NavMan.NavigateTo($"Playing/{FolderId}/{LevelNumber}/{LevelType}/{QuestionSetId}/");
     }
 
 

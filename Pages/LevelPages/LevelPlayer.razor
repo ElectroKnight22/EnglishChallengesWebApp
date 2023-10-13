@@ -1,7 +1,7 @@
 ﻿@using EnglishChallengesWebApp.Pages.LevelPages.LevelDisplays
 @using EnglishChallengesWebApp.Resources.Model
 
-@page "/Playing/{LevelNumber:int}/{LevelType}/{QuestionSetId:int}"
+@page "/Playing/{FolderId:int}/{LevelNumber:int}/{LevelType}/{QuestionSetId:int}"
 
 <h3>Level @LevelNumber @LevelType</h3>
 
@@ -9,6 +9,7 @@
     @{
         var parameters = new
         {
+            FolderId = FolderId,
             LevelNumber = LevelNumber,
             LevelType = LevelType,
             QuestionSetId = QuestionSetId,
@@ -36,6 +37,8 @@
 </body>
 
 @code {
+    [Parameter]
+    public int FolderId { get; set; }
     [Parameter]
     public int LevelNumber { get; set; }
     [ParameterAttribute]
