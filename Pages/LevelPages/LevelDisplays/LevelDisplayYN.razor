@@ -13,8 +13,8 @@
     <label style="font-size:16px; text-align:center;">@Prompt</label>
 </div>
 <div style="display:flex; justify-content:center;">
-    <button disabled=@IsAnsweringDisabled @onclick='@(e => ChooseAnswer("True"))' style="margin:10px;">Yes</button>
-    <button disabled=@IsAnsweringDisabled @onclick='@(e => ChooseAnswer("False"))' style="margin:10px;">No</button>
+    <button disabled=@IsAnsweringDisabled @onclick='@(e => ChooseAnswer("True"))' style="margin:10px;"><b>Yes</b></button>
+    <button disabled=@IsAnsweringDisabled @onclick='@(e => ChooseAnswer("False"))' style="margin:10px;"><b>No</b></button>
 </div>
 <div style="display:flex; justify-content:center;">
     <button class="btn btn-primary" id="NextBtn" disabled="@(!IsAnsweringDisabled)" @onclick="LoadNextQuestion" style="margin:10px;">NEXT</button>
