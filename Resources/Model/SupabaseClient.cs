@@ -17,7 +17,8 @@ namespace EnglishChallengesWebApp.Resources.Model
 
         protected const long allowFileSizeKB = 15000000000;
         protected long maxFileSize = 1024 * allowFileSizeKB;
-        protected int maxAllowedFiles = 0; // 0 means unlimited
+        protected int allowedFileNumber = 0; // 0 means unlimited
+        protected int maxFileNumberLimit = 10000000;
         protected bool FileTooLarge {get; set;} = false;
         protected bool IsUploading { get; set; } = false;
         protected bool IsLoading { get; set; } = false;
@@ -33,7 +34,7 @@ namespace EnglishChallengesWebApp.Resources.Model
 
         protected async Task RetrieveAllFiles()
         {
-            DatabaseFiles = await Supabase.Storage.From(_storageName).List() ?? new();
+            DatabaseFiles = await Supabase.Storage.From(_storageName).List("",new SearchOptions() { Limit = allowedFileNumber == 0 ? maxFileNumberLimit : allowedFileNumber }) ?? new();
         }
 
         protected void LoadFilesMulti(InputFileChangeEventArgs e)
@@ -41,7 +42,7 @@ namespace EnglishChallengesWebApp.Resources.Model
             IsLoading = true;
             LoadedFiles.Clear();
 
-            foreach (var file in e.GetMultipleFiles(maxAllowedFiles == 0 ? 10000000 : maxAllowedFiles))
+            foreach (var file in e.GetMultipleFiles(allowedFileNumber == 0 ? maxFileNumberLimit : allowedFileNumber))
             {
                 try
                 {
