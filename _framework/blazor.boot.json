@@ -1,7 +1,7 @@
 {
   "entryAssembly": "EnglishChallengesWebApp",
   "resources": {
-    "hash": "sha256-znO8gWjsaxQsma2KrEzbCNK0+UR/V7bzn6oIPsQ3FBY=",
+    "hash": "sha256-/FbHr3ba9HH+7D2eITNcebb1hQrDsLABC6ay57Q1fJ8=",
     "runtime": {
       "dotnet.7.0.17.l5d3yuhyfu.js": "sha256-E0n6hbqoR0T+sf5KQWRykPOVHyupoVmuMAlrNdZv/58=",
       "dotnet.timezones.blat": "sha256-GzDmKQksbAkzNe1GNrGcVtpc0naGXOFCpUzq3c/pV+c=",
@@ -12,7 +12,7 @@
     },
     "assembly": {
       "CurrieTechnologies.Razor.SweetAlert2.dll": "sha256-jaHzMzp157atLBDyTfDX4LuHLGBZ1q/5g/2s83upTCk=",
-      "EnglishChallengesWebApp.dll": "sha256-liqCavg5kLCSMENXCSt/rxeqcz2IGpbHU2VO2G+jgDo=",
+      "EnglishChallengesWebApp.dll": "sha256-zjqf7KFInIFX+aBWs3yaNA+edLoeRGUkMPLanDPCMSI=",
       "Microsoft.AspNetCore.Authorization.dll": "sha256-I9BNNNz69YSLFUasEWy8BiRw5SBJ3+fANzAAjw6r1mo=",
       "Microsoft.AspNetCore.Components.Authorization.dll": "sha256-T6gDk81V5MkJ1HmEBYibmvhmprqEJMEG26hTr5TUF3w=",
       "Microsoft.AspNetCore.Components.dll": "sha256-vyXJPOoae8sFBIg0u6LacS7yFmRkCAVm5QTJW1rTaq4=",
